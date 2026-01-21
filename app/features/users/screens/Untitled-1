@@ -1,0 +1,256 @@
+[Supaplate Docs](https://supaplate.com/docs)
+[🇬🇧](https://supaplate.com/en/docs)
+[🇰🇷](https://supaplate.com/docs)
+Supaplate
+Build your ideas in record time.
+- Introduction[Welcome](https://supaplate.com/docs)[Setup](https://supaplate.com/docs/setup)
+- [Welcome](https://supaplate.com/docs)
+- [Setup](https://supaplate.com/docs/setup)
+- Development[Project structure](https://supaplate.com/docs/project-structure)[Environment variables](https://supaplate.com/docs/environment-variables)[Database Schema](https://supaplate.com/docs/database)[Emails](https://supaplate.com/docs/emails)[Testing](https://supaplate.com/docs/testing)[Prettier](https://supaplate.com/docs/prettier)
+- [Project structure](https://supaplate.com/docs/project-structure)
+- [Environment variables](https://supaplate.com/docs/environment-variables)
+- [Database Schema](https://supaplate.com/docs/database)
+- [Emails](https://supaplate.com/docs/emails)
+- [Testing](https://supaplate.com/docs/testing)
+- [Prettier](https://supaplate.com/docs/prettier)
+- Features[Authentication](https://supaplate.com/docs/authentication)[Users](https://supaplate.com/docs/users)[Settings](https://supaplate.com/docs/settings)[Cron Jobs](https://supaplate.com/docs/cron)[Contact](https://supaplate.com/docs/contact)[Blog](https://supaplate.com/docs/blog)[Legal](https://supaplate.com/docs/legal)[Payments](https://supaplate.com/docs/payments)
+- [Authentication](https://supaplate.com/docs/authentication)
+- [Users](https://supaplate.com/docs/users)
+- [Settings](https://supaplate.com/docs/settings)
+- [Cron Jobs](https://supaplate.com/docs/cron)
+- [Contact](https://supaplate.com/docs/contact)
+- [Blog](https://supaplate.com/docs/blog)
+- [Legal](https://supaplate.com/docs/legal)
+- [Payments](https://supaplate.com/docs/payments)
+- Integrations[Sentry](https://supaplate.com/docs/sentry)[Google Analytics](https://supaplate.com/docs/google-analytics)[Channel Talk](https://supaplate.com/docs/channel-talk)
+- [Sentry](https://supaplate.com/docs/sentry)
+- [Google Analytics](https://supaplate.com/docs/google-analytics)
+- [Channel Talk](https://supaplate.com/docs/channel-talk)
+- Production[Deployment](https://supaplate.com/docs/deployment)[Production Tips](https://supaplate.com/docs/production-tips)
+- [Deployment](https://supaplate.com/docs/deployment)
+- [Production Tips](https://supaplate.com/docs/production-tips)
+
+## Introduction
+- [Welcome](https://supaplate.com/docs)
+- [Setup](https://supaplate.com/docs/setup)
+[Welcome](https://supaplate.com/docs)
+[Setup](https://supaplate.com/docs/setup)
+
+## Development
+- [Project structure](https://supaplate.com/docs/project-structure)
+- [Environment variables](https://supaplate.com/docs/environment-variables)
+- [Database Schema](https://supaplate.com/docs/database)
+- [Emails](https://supaplate.com/docs/emails)
+- [Testing](https://supaplate.com/docs/testing)
+- [Prettier](https://supaplate.com/docs/prettier)
+[Project structure](https://supaplate.com/docs/project-structure)
+[Environment variables](https://supaplate.com/docs/environment-variables)
+[Database Schema](https://supaplate.com/docs/database)
+[Emails](https://supaplate.com/docs/emails)
+[Testing](https://supaplate.com/docs/testing)
+[Prettier](https://supaplate.com/docs/prettier)
+
+## Features
+- [Authentication](https://supaplate.com/docs/authentication)
+- [Users](https://supaplate.com/docs/users)
+- [Settings](https://supaplate.com/docs/settings)
+- [Cron Jobs](https://supaplate.com/docs/cron)
+- [Contact](https://supaplate.com/docs/contact)
+- [Blog](https://supaplate.com/docs/blog)
+- [Legal](https://supaplate.com/docs/legal)
+- [Payments](https://supaplate.com/docs/payments)
+[Authentication](https://supaplate.com/docs/authentication)
+[Users](https://supaplate.com/docs/users)
+[Settings](https://supaplate.com/docs/settings)
+[Cron Jobs](https://supaplate.com/docs/cron)
+[Contact](https://supaplate.com/docs/contact)
+[Blog](https://supaplate.com/docs/blog)
+[Legal](https://supaplate.com/docs/legal)
+[Payments](https://supaplate.com/docs/payments)
+
+## Integrations
+- [Sentry](https://supaplate.com/docs/sentry)
+- [Google Analytics](https://supaplate.com/docs/google-analytics)
+- [Channel Talk](https://supaplate.com/docs/channel-talk)
+[Sentry](https://supaplate.com/docs/sentry)
+[Google Analytics](https://supaplate.com/docs/google-analytics)
+[Channel Talk](https://supaplate.com/docs/channel-talk)
+
+## Production
+- [Deployment](https://supaplate.com/docs/deployment)
+- [Production Tips](https://supaplate.com/docs/production-tips)
+[Deployment](https://supaplate.com/docs/deployment)
+[Production Tips](https://supaplate.com/docs/production-tips)
+Introduction
+
+# Welcome
+
+Supaplate 문서에 오신 것을 환영합니다!
+방문해 주셔서 기쁩니다. 여러분이 Supaplate로 무엇을 만들지 기대됩니다.
+이 가이드는 Supaplate의 작동 방식을 이해하고, 여러분의 프로젝트를 빌드 하기 위한 설정 방법을 안내해 드립니다. 반드시 주의 깊게 읽어주세요.
+
+## Supaplate에 대하여
+Supaplate는 보일러플레이트, 즉 프로젝트의 시작점으로 사용할 수 있는 코드 템플릿입니다.
+사용자 인증, 프로필 관리, 결제, 현지화, 다크 모드 등 대부분의 프로젝트에 필요한 핵심 기능이 포함되어 있습니다.
+Supaplate는 시작점일 뿐입니다
+Supaplate는 모든 기능을 갖춘 애플리케이션이 아니므로, 필요한 기능을 직접 추가해야 합니다.
+이 코드 템플릿은 의도적으로 최소한의 기능만 포함하고 있으며, 프로젝트를 시작하기 위한 필수 기능만 포함되어 있습니다. 이를 기반으로 자신만의 프로젝트를 만드는 것은 여러분의 몫입니다.
+
+## 이 가이드에 대하여
+이 가이드는 처음부터 끝까지 순서대로 읽어야 합니다.
+이 가이드는 Supaplate에 사용되는 기반 기술(React Router, Supabase, Tailwind CSS 등)에 대한 튜토리얼이 아니므로 각 기술은 해당 공식 문서를 참조해 주세요.
+이 가이드에서는 프로젝트를 빌드하기 위해 Supaplate를 설정하는 방법, 사용 규칙, 프로젝트의 구조를 설명하고 Supaplate에서 제공하는 기능을 사용하는 방법에 대해 설명합니다.
+Supaplate의 코드는 광범위하게 주석이 달려 있으므로, 이 가이드를 읽는 것과는 별도로 소스 코드의 주석을 읽고 코드베이스를 이해하세요.
+
+## Maker, 당신에 대하여
+여러분은 다음 기술에 대해 잘 알고 있어야 합니다:
+- React
+- React Router 7(이전 명칭: Remix)
+- Supabase
+- Tailwind CSS
+- Drizzle ORM
+- TypeScript
+- SQL
+만약 이러한 기능에 익숙하지 않다면, 공식 문서를 통해 자세히 알아보세요.
+- [React Router Documentation](https://reactrouter.com/home)
+- [Tailwind CSS Documentation](https://tailwindcss.com/)
+- [Supabase Documentation](https://supabase.com/docs)
+- [TypeScript Documentation](https://www.typescriptlang.org/docs/handbook/typescript-from-scratch.html)
+- [Drizzle Documentation](https://orm.drizzle.team/docs/overview)
+[React Router Documentation](https://reactrouter.com/home)
+[Tailwind CSS Documentation](https://tailwindcss.com/)
+[Supabase Documentation](https://supabase.com/docs)
+[TypeScript Documentation](https://www.typescriptlang.org/docs/handbook/typescript-from-scratch.html)
+[Drizzle Documentation](https://orm.drizzle.team/docs/overview)
+튜토리얼을 스킵하고, 직접 만들면서 배우세요!”
+긴 튜토리얼을 읽는 대신 [Maker 마스터클래스](https://nomadcoders.co/maker-masterclass) 강좌에서 React Router, Supabase, Tailwind CSS 등을 사용하여 실제 프로젝트를 구축하는 방법을 배워보세요.
+이 과정을 마치면 여러분이 생각하는 모든 것을 만들 수 있으며, 프로젝트의 정확한 요구 사항에 맞게 Supaplate를 커스터마이즈 할 수 있습니다.
+
+## 기능
+Supaplate에 포함된 모든 기능을 그룹별로 정리하였습니다:
+
+### 인증
+- ✅ 이메일/비밀번호 인증
+- ✅ 소셜 인증(10개 이상의 제공업체)
+- ✅ 매직 링크 인증
+- ✅ OTP 인증
+- ✅ 이메일 인증
+- ✅ 비밀번호 찾기
+- ✅ 소셜 계정 연결/연결 해제
+- ✅ 로그아웃
+- ✅ 보호된 경로(대시보드, 프로필 등)
+
+### 유저 프로필
+- ✅ 프로필 정보 수정
+- ✅ 아바타 업로드
+- ✅ 안전한 이메일 변경
+- ✅ 비밀번호 변경
+- ✅ Playwright를 통한 E2E(End-to-End) 테스트
+
+### 분석 기능
+- ✅ Sentry
+- ✅ Google 애널리틱스 / Google 태그 매니저 연동
+- ✅ 채널톡 연동
+
+### 결제
+- ✅ Toss Payments 결제위젯 연동
+- ✅ 결제 검증
+- ✅ 유저 결제 내역
+
+### 추가 기능
+- ✅ 현지화(번역)
+- ✅ 다크모드
+- ✅ 마크다운 기반 블로그
+- ✅ OG 이미지 템플릿
+- ✅ 법적 고지 페이지(이용 약관, 개인정보처리방침 등)
+- ✅ hCaptcha 및 Turnstile 통합 고객 지원 연락 페이지 및 양식
+- ✅ 사이트맵 생성
+- ✅ 자동화 이메일
+- ✅ Cron Job 시스템
+기능은 자유롭게 제거하세요
+Supaplate에 포함된 모든 기능을 사용할 필요는 없으며, 필요 없는 기능은 제거할 수 있습니다.
+./src/app/features 폴더에서 각 기능 그룹, 네비게이션 바의 링크 및 './app/routes.ts 파일의 경로를 제거하기만 하면 됩니다.
+
+```
+폴더에서 각 기능 그룹, 네비게이션 바의 링크 및 './app/routes.ts
+```
+
+## 기술적 세부 정보
+Supaplate는 다음 패키지/제공업체로 빌드됩니다:
+- [React Router 7](https://reactrouter.com/home)
+- [Supabase](https://supabase.com/docs)[Supabase Auth](https://supabase.com/docs/guides/auth)[Supabase Database](https://supabase.com/docs/guides/database)[Supabase Storage](https://supabase.com/docs/guides/storage)[Supabase Queues](https://supabase.com/docs/guides/queues)[Supabase Cron Jobs](https://supabase.com/docs/guides/cron)
+- [Supabase Auth](https://supabase.com/docs/guides/auth)
+- [Supabase Database](https://supabase.com/docs/guides/database)
+- [Supabase Storage](https://supabase.com/docs/guides/storage)
+- [Supabase Queues](https://supabase.com/docs/guides/queues)
+- [Supabase Cron Jobs](https://supabase.com/docs/guides/cron)
+- [Drizzle ORM](https://orm.drizzle.team/docs/overview)
+- [Tailwind CSS](https://tailwindcss.com/)
+- [Shadcn](https://ui.shadcn.com/)
+- [Lucide React](https://lucide.dev/icons/)
+- [NProgress](https://ricostacruz.com/nprogress/)
+- [React Email](https://react.email/)
+- [Resend](https://resend.com/docs)
+- [Sentry](https://sentry.io/docs)
+- [Satori](https://github.com/vercel/satori)
+- [Playwright](https://playwright.dev/docs/intro)
+[React Router 7](https://reactrouter.com/home)
+[Supabase](https://supabase.com/docs)
+- [Supabase Auth](https://supabase.com/docs/guides/auth)
+- [Supabase Database](https://supabase.com/docs/guides/database)
+- [Supabase Storage](https://supabase.com/docs/guides/storage)
+- [Supabase Queues](https://supabase.com/docs/guides/queues)
+- [Supabase Cron Jobs](https://supabase.com/docs/guides/cron)
+[Supabase Auth](https://supabase.com/docs/guides/auth)
+[Supabase Database](https://supabase.com/docs/guides/database)
+[Supabase Storage](https://supabase.com/docs/guides/storage)
+[Supabase Queues](https://supabase.com/docs/guides/queues)
+[Supabase Cron Jobs](https://supabase.com/docs/guides/cron)
+[Drizzle ORM](https://orm.drizzle.team/docs/overview)
+[Tailwind CSS](https://tailwindcss.com/)
+[Shadcn](https://ui.shadcn.com/)
+[Lucide React](https://lucide.dev/icons/)
+[NProgress](https://ricostacruz.com/nprogress/)
+[React Email](https://react.email/)
+[Resend](https://resend.com/docs)
+[Sentry](https://sentry.io/docs)
+[Satori](https://github.com/vercel/satori)
+[Playwright](https://playwright.dev/docs/intro)
+[Setup](https://supaplate.com/docs/setup)
+
+## On this page
+1. [Supaplate에 대하여](https://supaplate.com/docs#supaplate)
+2. [이 가이드에 대하여](https://supaplate.com/docs)
+3. [Maker, 당신에 대하여](https://supaplate.com/docs#maker)
+4. [기능](https://supaplate.com/docs)[인증](https://supaplate.com/docs)[유저 프로필](https://supaplate.com/docs)[분석 기능](https://supaplate.com/docs)[결제](https://supaplate.com/docs)[추가 기능](https://supaplate.com/docs)
+5. [인증](https://supaplate.com/docs)
+6. [유저 프로필](https://supaplate.com/docs)
+7. [분석 기능](https://supaplate.com/docs)
+8. [결제](https://supaplate.com/docs)
+9. [추가 기능](https://supaplate.com/docs)
+10. [기술적 세부 정보](https://supaplate.com/docs)
+
+### [Supaplate에 대하여](https://supaplate.com/docs#supaplate)
+[Supaplate에 대하여](https://supaplate.com/docs#supaplate)
+
+### [이 가이드에 대하여](https://supaplate.com/docs)
+[이 가이드에 대하여](https://supaplate.com/docs)
+
+### [Maker, 당신에 대하여](https://supaplate.com/docs#maker)
+[Maker, 당신에 대하여](https://supaplate.com/docs#maker)
+
+### [기능](https://supaplate.com/docs)
+[기능](https://supaplate.com/docs)
+1. [인증](https://supaplate.com/docs)
+2. [유저 프로필](https://supaplate.com/docs)
+3. [분석 기능](https://supaplate.com/docs)
+4. [결제](https://supaplate.com/docs)
+5. [추가 기능](https://supaplate.com/docs)
+[인증](https://supaplate.com/docs)
+[유저 프로필](https://supaplate.com/docs)
+[분석 기능](https://supaplate.com/docs)
+[결제](https://supaplate.com/docs)
+[추가 기능](https://supaplate.com/docs)
+
+### [기술적 세부 정보](https://supaplate.com/docs)
+[기술적 세부 정보](https://supaplate.com/docs)
