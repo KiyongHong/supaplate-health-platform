@@ -127,11 +127,6 @@ function SocialLoginButtons() {
         href="/auth/social/start/google"
       />
       <AuthLoginButton
-        logo={<GithubLogo className="size-4 scale-125 dark:text-white" />}
-        label="Github"
-        href="/auth/social/start/github"
-      />
-      <AuthLoginButton
         logo={<AppleLogo className="size-4 scale-150 dark:text-white" />}
         label="Apple"
         href="/auth/social/start/apple"
