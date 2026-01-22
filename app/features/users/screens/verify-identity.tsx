@@ -7,7 +7,6 @@ import makeServerClient from "~/core/lib/supa-client.server";
 import { processAndSaveCheckup } from "~/features/health/services/checkup.server";
 import { fetchHealthDataFromAPI } from "~/features/health/services/health-api.server";
 import { IdentityVerification } from "~/features/users/components/identity-verification";
-import { updateUserProfile } from "~/features/users/queries.server";
 
 export const meta: Route.MetaFunction = () => {
   return [{ title: "Verify Identity | Health Platform" }];
