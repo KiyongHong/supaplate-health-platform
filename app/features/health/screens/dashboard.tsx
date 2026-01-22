@@ -1,4 +1,4 @@
-import { type LoaderFunctionArgs } from "react-router";
+import { type LoaderFunctionArgs, type MetaFunction } from "react-router";
 import { useLoaderData, Link } from "react-router";
 import { fetchHealthDataFromAPI } from "../services/health-api.server";
 import { ATTIA_STANDARDS, analyzeMetric, HealthStatus, type MetricStandard } from "../lib/attia-standards";
@@ -7,6 +7,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter }
 import { Badge } from "~/core/components/ui/badge";
 import { Button } from "~/core/components/ui/button";
 import { ShieldCheck, ShieldAlert, Activity, ArrowRight, Lock, Crown } from "lucide-react";
+import { useTranslation } from "react-i18next";
+import i18next from "~/core/lib/i18next.server";
 
 export async function loader({ request }: LoaderFunctionArgs) {
   // In a real app, retrieve the user's CI and Subscription Status from the DB/Session
@@ -17,7 +19,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
   const healthData = healthDataList[0]; // Take the most recent one
 
   if (!healthData) {
-    return { analysis: [], protocols: [], isPremium };
+    return { analysis: [], protocols: [], isPremium, title: (await i18next.getFixedT(request))("health.dashboard.title") };
   }
 
   // Analyze specific metrics we care about
@@ -56,12 +58,22 @@ export async function loader({ request }: LoaderFunctionArgs) {
     analysis: validResults,
     protocols: Array.from(protocolMap.values()),
     score: Math.max(0, score),
-    isPremium
+    isPremium,
+    title: (await i18next.getFixedT(request))("health.dashboard.title"),
   };
 }
 
+export const meta: MetaFunction<typeof loader> = ({ data }) => {
+  return [
+    {
+      title: `${data?.title ?? "Health Dashboard"} | ${import.meta.env.VITE_APP_NAME}`,
+    },
+  ];
+};
+
 export default function HealthDashboard() {
   const { analysis, protocols, score, isPremium } = useLoaderData<typeof loader>();
+  const { t } = useTranslation();
 
   // For Free Users: Only show 2 metrics unlocked
   const unlockedMetrics = isPremium ? analysis : analysis.slice(0, 2);
@@ -71,20 +83,20 @@ export default function HealthDashboard() {
     <div className="space-y-8 p-8 max-w-7xl mx-auto">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
         <div>
-           <Badge variant="outline" className="mb-2">Phase 1 Analysis</Badge>
-          <h1 className="text-3xl font-bold tracking-tight">Health Status Report</h1>
+           <Badge variant="outline" className="mb-2">{t("health.dashboard.phase_badge")}</Badge>
+          <h1 className="text-3xl font-bold tracking-tight">{t("health.dashboard.title")}</h1>
           <p className="text-muted-foreground mt-1">
-            Based on Peter Attia's Longevity Framework
+            {t("health.dashboard.subtitle")}
           </p>
         </div>
         <div className="flex items-center gap-4 bg-muted/50 p-4 rounded-xl border">
             <div>
-                <p className="text-sm font-medium text-muted-foreground">Overall Health Score</p>
+                <p className="text-sm font-medium text-muted-foreground">{t("health.dashboard.score_label")}</p>
                 <p className="text-3xl font-bold text-primary">{score}/100</p>
             </div>
             {!isPremium && (
                 <Button size="sm" className="hidden md:flex" asChild>
-                    <Link to="/upgrade">Unlock Full Report <Crown className="ml-2 w-4 h-4 text-yellow-400" fill="currentColor" /></Link>
+                    <Link to="/upgrade">{t("health.dashboard.unlock_cta")} <Crown className="ml-2 w-4 h-4 text-yellow-400" fill="currentColor" /></Link>
                 </Button>
             )}
         </div>
@@ -107,12 +119,12 @@ export default function HealthDashboard() {
                <div className="mx-auto w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mb-4">
                   <Lock className="w-6 h-6 text-primary" />
                </div>
-               <h3 className="text-lg font-semibold mb-2">Unlock {lockedMetrics.length} More Advanced Metrics</h3>
+               <h3 className="text-lg font-semibold mb-2">{t("health.dashboard.unlock_more_title", { count: lockedMetrics.length })}</h3>
                <p className="text-muted-foreground max-w-md mx-auto mb-6">
-                   See your deep analysis for ApoB, Insulin, hs-CRP and detailed Huberman protocols.
+                   {t("health.dashboard.unlock_more_desc")}
                </p>
                <Button size="lg" className="w-full md:w-auto" asChild>
-                   <Link to="/upgrade">Upgrade to Premium (₩19,900)</Link>
+                   <Link to="/upgrade">{t("health.dashboard.upgrade_button")}</Link>
                </Button>
           </div>
       )}
@@ -123,9 +135,9 @@ export default function HealthDashboard() {
              <div className="flex items-center justify-between mb-6">
                 <h2 className="text-2xl font-bold tracking-tight flex items-center gap-2">
                     <Activity className="w-6 h-6 text-primary" />
-                    Recommended Protocols
+                    {t("health.dashboard.protocols_title")}
                 </h2>
-                {isPremium && <Badge>Personalized for You</Badge>}
+                {isPremium && <Badge>{t("health.dashboard.personalized_badge")}</Badge>}
              </div>
             
             <div className={`grid gap-6 md:grid-cols-2 ${!isPremium ? 'opacity-40 blur-sm pointer-events-none select-none' : ''}`}>
@@ -139,12 +151,12 @@ export default function HealthDashboard() {
                 <div className="absolute inset-0 flex items-center justify-center z-10">
                      <div className="bg-background/80 backdrop-blur-md p-8 rounded-2xl shadow-2xl border text-center max-w-md mx-4">
                         <Crown className="w-12 h-12 text-yellow-500 mx-auto mb-4" />
-                        <h3 className="text-xl font-bold mb-2">Strict Protocol Access</h3>
+                        <h3 className="text-xl font-bold mb-2">{t("health.dashboard.strict_access_title")}</h3>
                         <p className="text-muted-foreground mb-6">
-                            Get exact dosage, timing, and implementation guides for {protocols.length} specific protocols tailored to your blood work.
+                            {t("health.dashboard.strict_access_desc", { count: protocols.length })}
                         </p>
                         <Button className="w-full font-bold" size="lg" asChild>
-                             <Link to="/upgrade">Access Huberman Protocols</Link>
+                             <Link to="/upgrade">{t("health.dashboard.access_button")}</Link>
                         </Button>
                      </div>
                 </div>
@@ -156,6 +168,7 @@ export default function HealthDashboard() {
 }
 
 function MetricCard({ item }: { item: NonNullable<ReturnType<typeof analyzeMetric>> }) {
+  const { t } = useTranslation();
   const isOptimal = item.status === HealthStatus.OPTIMAL;
   const isPoor = item.status === HealthStatus.POOR;
   const isSubOptimal = item.status === HealthStatus.SUB_OPTIMAL;
@@ -181,7 +194,9 @@ function MetricCard({ item }: { item: NonNullable<ReturnType<typeof analyzeMetri
             {item.value} <span className="text-sm font-normal text-muted-foreground">{item.standard.unit}</span>
         </div>
         <Badge variant="secondary" className={`mt-2 ${statusColor} border-0`}>
-            {item.status.replace("_", " ")}
+            {isOptimal && t("health.dashboard.metrics.optimal")}
+            {isSubOptimal && t("health.dashboard.metrics.sub_optimal")}
+            {isPoor && t("health.dashboard.metrics.poor")}
         </Badge>
         
         <p className="text-xs text-muted-foreground mt-3 leading-relaxed">
@@ -203,6 +218,7 @@ function MetricCard({ item }: { item: NonNullable<ReturnType<typeof analyzeMetri
 }
 
 function LockedMetricCard({ item }: { item: NonNullable<ReturnType<typeof analyzeMetric>> }) {
+    const { t } = useTranslation();
     return (
         <Card className="h-full flex flex-col opacity-60 relative overflow-hidden">
              <div className="absolute inset-0 backdrop-blur-[2px] z-10 flex items-center justify-center bg-background/10">
@@ -210,7 +226,7 @@ function LockedMetricCard({ item }: { item: NonNullable<ReturnType<typeof analyz
              </div>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium uppercase tracking-wider text-muted-foreground blur-[2px]">
-                    Hidden Metric
+                    {t("health.dashboard.metrics.hidden_title")}
                 </CardTitle>
                  <ShieldAlert className="h-4 w-4 text-muted-foreground/30" />
             </CardHeader>
@@ -219,7 +235,7 @@ function LockedMetricCard({ item }: { item: NonNullable<ReturnType<typeof analyz
                     ?? <span className="text-sm font-normal">mg/dL</span>
                 </div>
                  <Badge variant="outline" className="mt-2 blur-[2px] opacity-50">
-                    Analysis Locked
+                    {t("health.dashboard.metrics.analysis_locked")}
                 </Badge>
             </CardContent>
         </Card>
@@ -228,6 +244,7 @@ function LockedMetricCard({ item }: { item: NonNullable<ReturnType<typeof analyz
 
 
 function ProtocolCard({ protocol }: { protocol: Protocol }) {
+    const { t } = useTranslation();
     return (
         <Card className="border-l-4 border-l-primary h-full">
             <CardHeader>
@@ -250,13 +267,13 @@ function ProtocolCard({ protocol }: { protocol: Protocol }) {
                         </div>
                     ))}
                     {protocol.actionItems.length > 2 && (
-                        <p className="text-xs text-muted-foreground pl-7 pt-1">+{protocol.actionItems.length - 2} more steps</p>
+                        <p className="text-xs text-muted-foreground pl-7 pt-1">{t("health.protocol.more_steps", { count: protocol.actionItems.length - 2 })}</p>
                     )}
                 </div>
             </CardContent>
             <CardFooter>
                  <Button variant="ghost" size="sm" className="w-full mt-2" asChild>
-                    <Link to={`/dashboard/health/protocols/${protocol.id}`}>View Details <ArrowRight className="ml-2 w-4 h-4" /></Link>
+                    <Link to={`/dashboard/health/protocols/${protocol.id}`}>{t("health.protocol.view_details")} <ArrowRight className="ml-2 w-4 h-4" /></Link>
                  </Button>
             </CardFooter>
         </Card>

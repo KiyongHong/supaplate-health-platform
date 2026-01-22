@@ -23,6 +23,9 @@ import { Form, data } from "react-router";
 import Turnstile, { useTurnstile } from "react-turnstile";
 import { toast } from "sonner";
 import { z } from "zod";
+import { useTranslation } from "react-i18next";
+import i18next from "~/core/lib/i18next.server";
+import { type MetaFunction } from "react-router";
 
 import FormButton from "~/core/components/form-button";
 import FormErrors from "~/core/components/form-error";
@@ -39,13 +42,17 @@ import resendClient from "~/core/lib/resend-client.server";
  *
  * @returns Array of metadata objects for the page
  */
-export const meta: Route.MetaFunction = () => {
+export const meta: MetaFunction<typeof loader> = ({ data }) => {
   return [
     {
-      title: `Contact Us | ${import.meta.env.VITE_APP_NAME}`,
+      title: `${data?.title} | ${import.meta.env.VITE_APP_NAME}`,
     },
   ];
 };
+
+export async function loader({ request }: Route.LoaderArgs) {
+  return { title: (await i18next.getFixedT(request))("contact.title") };
+}
 
 /**
  * Validates a Turnstile CAPTCHA token with Cloudflare's API
@@ -246,6 +253,8 @@ export async function action({ request }: Route.ActionArgs) {
  * @param actionData - Data returned from the action function after form submission
  */
 export default function ContactUs({ actionData }: Route.ComponentProps) {
+  const { t } = useTranslation();
+  // State for storing CAPTCHA tokens from both providers
   // State for storing CAPTCHA tokens from both providers
   const [hcaptchaToken, setHcaptchaToken] = useState<string>("");
   const [turnstileToken, setTurnstileToken] = useState<string>("");
@@ -280,7 +289,7 @@ export default function ContactUs({ actionData }: Route.ComponentProps) {
     // Handle successful submission
     if (actionData?.success) {
       // Show success message
-      toast.success("Email sent successfully");
+      toast.success(t("health.onboarding.steps.success"));
       
       // Reset form and remove focus from inputs
       formRef.current?.reset();
@@ -319,10 +328,10 @@ export default function ContactUs({ actionData }: Route.ComponentProps) {
       {/* Header section */}
       <div>
         <h1 className="text-center text-3xl font-semibold tracking-tight md:text-5xl">
-          Contact Us
+          {t("contact.title")}
         </h1>
         <p className="text-muted-foreground mt-2 text-center font-medium md:text-lg">
-          This is a page to demo HCaptcha and Turnstile captchas.
+          {t("contact.subtitle")}
         </p>
       </div>
 
@@ -335,14 +344,14 @@ export default function ContactUs({ actionData }: Route.ComponentProps) {
         {/* Name field */}
         <div className="flex flex-col items-start space-y-2">
           <Label htmlFor="name" className="flex flex-col items-start gap-1">
-            Name
+            {t("auth.join.form.name_label")}
           </Label>
           <Input
             id="name"
             name="name"
             required
             type="text"
-            placeholder="Enter your name"
+            placeholder={t("auth.join.form.name_placeholder")}
           />
           {/* Display name field validation errors if any */}
           {actionData &&
@@ -355,14 +364,14 @@ export default function ContactUs({ actionData }: Route.ComponentProps) {
         {/* Email field */}
         <div className="flex flex-col items-start space-y-2">
           <Label htmlFor="email" className="flex flex-col items-start gap-1">
-            Email
+            {t("contact.email")}
           </Label>
           <Input
             id="email"
             name="email"
             required
             type="email"
-            placeholder="Enter your email"
+            placeholder={t("auth.login.form.email_placeholder")}
           />
           {/* Display email field validation errors if any */}
           {actionData &&
@@ -375,13 +384,13 @@ export default function ContactUs({ actionData }: Route.ComponentProps) {
         {/* Message field */}
         <div className="flex flex-col items-start space-y-2">
           <Label htmlFor="message" className="flex flex-col items-start gap-1">
-            Message
+            {t("contact.message")}
           </Label>
           <Textarea
             id="message"
             name="message"
             required
-            placeholder="Enter your message"
+            placeholder={t("contact.message")}
             className="h-32 resize-none"
           />
           {/* Display message field validation errors if any */}
@@ -453,7 +462,7 @@ export default function ContactUs({ actionData }: Route.ComponentProps) {
           type="submit"
           className="w-full"
           disabled={!hcaptchaToken || !turnstileToken}
-          label="Send"
+          label={t("contact.send")}
         />
       </Form>
     </div>

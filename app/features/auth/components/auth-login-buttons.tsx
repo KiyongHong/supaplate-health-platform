@@ -17,6 +17,7 @@ import { LockIcon, MailIcon, PhoneIcon } from "lucide-react";
 import { Link } from "react-router";
 
 import { Button } from "~/core/components/ui/button";
+import { useTranslation } from "react-i18next";
 
 import { AppleLogo } from "./logos/apple";
 import { GithubLogo } from "./logos/github";
@@ -52,7 +53,7 @@ function AuthLoginButton({
     >
       <Link to={href}>
         <span>{logo}</span>
-        <span>Continue with {label}</span>
+        <span>{label}</span>
       </Link>
     </Button>
   );
@@ -66,10 +67,11 @@ function AuthLoginButton({
  * (e.g., social logins from passwordless options).
  */
 function Divider() {
+  const { t } = useTranslation();
   return (
     <div className="flex items-center gap-4">
       <span className="bg-input h-px w-full"></span>
-      <span className="text-muted-foreground text-xs">OR</span>
+      <span className="text-muted-foreground text-xs">{t("auth.social.or")}</span>
       <span className="bg-input h-px w-full"></span>
     </div>
   );
@@ -119,21 +121,22 @@ function _SignInButtons() {
  * brand guidelines for their logo presentation.
  */
 function SocialLoginButtons() {
+  const { t } = useTranslation();
   return (
     <>
       <AuthLoginButton
         logo={<GoogleLogo className="size-4" />}
-        label="Google"
+        label={t("auth.social.continue_with", { provider: "Google" })}
         href="/auth/social/start/google"
       />
       <AuthLoginButton
         logo={<AppleLogo className="size-4 scale-150 dark:text-white" />}
-        label="Apple"
+        label={t("auth.social.continue_with", { provider: "Apple" })}
         href="/auth/social/start/apple"
       />
       <AuthLoginButton
         logo={<KakaoLogo className="size-4 scale-125 dark:text-yellow-300" />}
-        label="Kakao"
+        label={t("auth.social.continue_with", { provider: "Kakao" })}
         href="/auth/social/start/kakao"
       />
     </>

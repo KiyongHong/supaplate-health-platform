@@ -17,6 +17,8 @@ import { REGEXP_ONLY_DIGITS } from "input-otp";
 import { useRef } from "react";
 import { Form, data, redirect, useSubmit } from "react-router";
 import { z } from "zod";
+import { useTranslation } from "react-i18next";
+import i18next from "~/core/lib/i18next.server";
 
 import FormButton from "~/core/components/form-button";
 import FormErrors from "~/core/components/form-error";
@@ -39,10 +41,10 @@ import makeServerClient from "~/core/lib/supa-client.server";
  *
  * Sets the page title using the application name from environment variables
  */
-export const meta: Route.MetaFunction = () => {
+export const meta: Route.MetaFunction = ({ data }) => {
   return [
     {
-      title: `OTP Login | ${import.meta.env.VITE_APP_NAME}`,
+      title: `${data?.title ?? "OTP Login"} | ${import.meta.env.VITE_APP_NAME}`,
     },
   ];
 };
@@ -66,7 +68,7 @@ const paramsSchema = z.object({
  * @param request - The incoming request with URL parameters
  * @returns The validated email or redirects to the start page
  */
-export function loader({ request }: Route.LoaderArgs) {
+export async function loader({ request }: Route.LoaderArgs) {
   // Extract and validate the email from URL query parameters
   const url = new URL(request.url);
   const { success, data: validData } = paramsSchema.safeParse(
@@ -79,7 +81,8 @@ export function loader({ request }: Route.LoaderArgs) {
   }
   
   // Return the validated email to the component
-  return { email: validData.email };
+  const t = await i18next.getFixedT(request);
+  return { email: validData.email, title: t("auth.otp.complete.title") };
 }
 
 /**
@@ -110,8 +113,9 @@ export async function action({ request }: Route.ActionArgs) {
 
   // Return validation error if data is invalid
   if (!success) {
+    const t = await i18next.getFixedT(request);
     return data(
-      { error: "Could not verify code. Please try again." },
+      { error: t("auth.otp.complete.errors.verify_failed") },
       { status: 400 },
     );
   }
@@ -156,6 +160,7 @@ export default function OtpComplete({
   loaderData,
   actionData,
 }: Route.ComponentProps) {
+  const { t } = useTranslation();
   // Reference to the form element for submission
   const formRef = useRef<HTMLFormElement>(null);
   
@@ -172,9 +177,9 @@ export default function OtpComplete({
       <Card className="w-full max-w-md">
         {/* Card header with title and description */}
         <CardHeader className="flex flex-col items-center">
-          <CardTitle className="text-2xl font-semibold">Confirm code</CardTitle>
+          <CardTitle className="text-2xl font-semibold">{t("auth.otp.complete.header.title")}</CardTitle>
           <CardDescription className="text-center text-base">
-            Enter the code we sent you.
+            {t("auth.otp.complete.header.description")}
           </CardDescription>
         </CardHeader>
         <CardContent className="grid gap-4">
@@ -218,7 +223,7 @@ export default function OtpComplete({
               </InputOTPGroup>
             </InputOTP>
             {/* Manual submit button as fallback */}
-            <FormButton label="Submit" className="w-full" />
+            <FormButton label={t("auth.otp.complete.action")} className="w-full" />
             {/* Error message display */}
             {actionData && "error" in actionData && actionData.error ? (
               <FormErrors errors={[actionData.error]} />

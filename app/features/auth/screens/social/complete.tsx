@@ -15,6 +15,8 @@ import type { Route } from "./+types/complete";
 
 import { data, redirect } from "react-router";
 import { z } from "zod";
+import { useTranslation } from "react-i18next";
+import i18next from "~/core/lib/i18next.server";
 
 import makeServerClient from "~/core/lib/supa-client.server";
 
@@ -23,10 +25,10 @@ import makeServerClient from "~/core/lib/supa-client.server";
  *
  * Sets the page title using the application name from environment variables
  */
-export const meta: Route.MetaFunction = () => {
+export const meta: Route.MetaFunction = ({ data }) => {
   return [
     {
-      title: `Confirm | ${import.meta.env.VITE_APP_NAME}`,
+      title: `${data?.title ?? "Confirm"} | ${import.meta.env.VITE_APP_NAME}`,
     },
   ];
 };
@@ -82,11 +84,13 @@ export async function loader({ request }: Route.LoaderArgs) {
     
     // If neither a successful nor error callback, return generic error
     if (!errorSuccess) {
-      return data({ error: "Invalid code" }, { status: 400 });
+      const t = await i18next.getFixedT(request);
+      return data({ error: t("auth.social.errors.invalid_code"), title: t("auth.confirm.title") }, { status: 400 });
     }
     
     // Return the error description from the provider
-    return data({ error: errorData.error_description }, { status: 400 });
+    const t = await i18next.getFixedT(request);
+    return data({ error: errorData.error_description, title: t("auth.confirm.title") }, { status: 400 });
   }
 
   // Create Supabase client and get response headers for auth cookies
@@ -97,7 +101,8 @@ export async function loader({ request }: Route.LoaderArgs) {
 
   // Return error if session exchange fails
   if (error) {
-    return data({ error: error.message }, { status: 400 });
+    const t = await i18next.getFixedT(request);
+    return data({ error: error.message, title: t("auth.confirm.title") }, { status: 400 });
   }
 
   // Redirect to home page with auth cookies in headers
@@ -117,10 +122,11 @@ export async function loader({ request }: Route.LoaderArgs) {
  * @param loaderData - Data from the loader containing any error messages
  */
 export default function Confirm({ loaderData }: Route.ComponentProps) {
+  const { t } = useTranslation();
   return (
     <div className="flex flex-col items-center justify-center gap-2.5">
       {/* Display error heading */}
-      <h1 className="text-2xl font-semibold">Login failed</h1>
+      <h1 className="text-2xl font-semibold">{t("auth.social.errors.login_failed")}</h1>
       {/* Display specific error message from the provider or Supabase */}
       <p className="text-muted-foreground">{loaderData.error}</p>
     </div>

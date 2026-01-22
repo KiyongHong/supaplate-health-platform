@@ -21,7 +21,7 @@ import { useTranslation } from "react-i18next";
 import { Link } from "react-router";
 
 import LangSwitcher from "./lang-switcher";
-import ThemeSwitcher from "./theme-switcher";
+
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { Button } from "./ui/button";
 import {
@@ -68,6 +68,7 @@ function UserMenu({
   email?: string;
   avatarUrl?: string | null;
 }) {
+  const { t } = useTranslation();
   return (
     <DropdownMenu>
       {/* Avatar as the dropdown trigger */}
@@ -92,7 +93,7 @@ function UserMenu({
           <SheetClose asChild>
             <Link to="/dashboard" viewTransition>
               <HomeIcon className="size-4" />
-              Dashboard
+              {t("common.nav.dashboard")}
             </Link>
           </SheetClose>
         </DropdownMenuItem>
@@ -102,7 +103,7 @@ function UserMenu({
           <SheetClose asChild>
             <Link to="/logout" viewTransition>
               <LogOutIcon className="size-4" />
-              Log out
+              {t("common.nav.logout")}
             </Link>
           </SheetClose>
         </DropdownMenuItem>
@@ -127,13 +128,14 @@ function UserMenu({
  * @returns Fragment containing sign in and sign up buttons
  */
 function AuthButtons() {
+  const { t } = useTranslation();
   return (
     <>
       {/* Sign in button (less prominent) */}
       <Button variant="ghost" asChild>
         <SheetClose asChild>
           <Link to="/login" viewTransition>
-            Sign in
+            {t("common.nav.login")}
           </Link>
         </SheetClose>
       </Button>
@@ -142,7 +144,7 @@ function AuthButtons() {
       <Button variant="default" asChild>
         <SheetClose asChild>
           <Link to="/join" viewTransition>
-            Sign up
+            {t("common.nav.join")}
           </Link>
         </SheetClose>
       </Button>
@@ -164,6 +166,7 @@ function AuthButtons() {
  * @returns Fragment containing settings dropdown, theme switcher, and language switcher
  */
 function Actions() {
+  const { t } = useTranslation();
   return (
     <>
       {/* Settings/debug dropdown menu */}
@@ -178,7 +181,7 @@ function Actions() {
           <DropdownMenuItem asChild>
             <SheetClose asChild>
               <Link to="/debug/sentry" viewTransition>
-                Sentry
+                {t("common.nav.settings")}
               </Link>
             </SheetClose>
           </DropdownMenuItem>
@@ -186,15 +189,14 @@ function Actions() {
           <DropdownMenuItem asChild>
             <SheetClose asChild>
               <Link to="/debug/analytics" viewTransition>
-                Google Tag
+                {t("common.nav.health")}
               </Link>
             </SheetClose>
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
       
-      {/* Theme switcher component (light/dark mode) */}
-      <ThemeSwitcher />
+
       
       {/* Language switcher component */}
       <LangSwitcher />
@@ -256,23 +258,22 @@ export function NavigationBar({
           <Link
             to="/blog"
             viewTransition
-            className="text-muted-foreground hover:text-foreground text-sm transition-colors"
           >
-            Blog
+            {t("common.nav.blog")}
           </Link>
           <Link
             to="/contact"
             viewTransition
             className="text-muted-foreground hover:text-foreground text-sm transition-colors"
           >
-            Contact
+            {t("contact.title")}
           </Link>
           <Link
             to="/payments/checkout"
             viewTransition
             className="text-muted-foreground hover:text-foreground text-sm transition-colors"
           >
-            Payments
+            {t("common.nav.pricing")}
           </Link>
           
           <Separator orientation="vertical" />
@@ -308,13 +309,13 @@ export function NavigationBar({
         <SheetContent>
           <SheetHeader>
             <SheetClose asChild>
-              <Link to="/blog">Blog</Link>
+              <Link to="/blog">{t("common.nav.blog")}</Link>
             </SheetClose>
             <SheetClose asChild>
-              <Link to="/contact">Contact</Link>
+              <Link to="/contact">{t("contact.title")}</Link>
             </SheetClose>
             <SheetClose asChild>
-              <Link to="/payments/checkout">Payments</Link>
+              <Link to="/payments/checkout">{t("common.nav.pricing")}</Link>
             </SheetClose>
           </SheetHeader>
           {loading ? (

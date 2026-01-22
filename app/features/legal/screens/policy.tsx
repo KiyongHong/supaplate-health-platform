@@ -19,6 +19,7 @@ import { bundleMDX } from "mdx-bundler";
 import { getMDXComponent } from "mdx-bundler/client";
 import path from "node:path";
 import { Link, data } from "react-router";
+import { useTranslation } from "react-i18next";
 
 import {
   TypographyBlockquote,
@@ -138,6 +139,7 @@ export async function loader({ params }: Route.LoaderArgs) {
 export default function Policy({
   loaderData: { frontmatter, code },
 }: Route.ComponentProps) {
+  const { t } = useTranslation();
   // Convert the compiled MDX code into a React component
   const MDXContent = getMDXComponent(code);
   
@@ -146,7 +148,7 @@ export default function Policy({
       {/* Navigation button to return to home page */}
       <Button variant="outline" asChild>
         <Link to="/" viewTransition>
-          &larr; Go home
+          &larr; {t("common.error.back_home")}
         </Link>
       </Button>
       

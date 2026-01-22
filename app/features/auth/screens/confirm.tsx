@@ -17,6 +17,8 @@ import type { Route } from "./+types/confirm";
 
 import { data, redirect } from "react-router";
 import { z } from "zod";
+import { useTranslation } from "react-i18next";
+import i18next from "~/core/lib/i18next.server";
 
 import makeServerClient from "~/core/lib/supa-client.server";
 
@@ -25,10 +27,10 @@ import makeServerClient from "~/core/lib/supa-client.server";
  *
  * Sets the page title using the application name from environment variables
  */
-export const meta: Route.MetaFunction = () => {
+export const meta: Route.MetaFunction = ({ data }) => {
   return [
     {
-      title: `Confirm | ${import.meta.env.VITE_APP_NAME}`,
+      title: `${data?.title ?? "Confirm"} | ${import.meta.env.VITE_APP_NAME}`,
     },
   ];
 };
@@ -65,6 +67,7 @@ const searchParamsSchema = z.object({
  * @returns Redirect to next URL with auth cookies or error response
  */
 export async function loader({ request }: Route.LoaderArgs) {
+  const t = await i18next.getFixedT(request);
   // Extract query parameters from the URL
   const { searchParams } = new URL(request.url);
 
@@ -75,7 +78,7 @@ export async function loader({ request }: Route.LoaderArgs) {
 
   // Return error if parameters are invalid
   if (!success) {
-    return data({ error: "Invalid confirmation code" }, { status: 400 });
+    return data({ error: t("auth.confirm.errors.invalid_code"), title: t("auth.confirm.title") }, { status: 400 });
   }
 
   // Create Supabase client and get response headers for auth cookies
@@ -88,14 +91,14 @@ export async function loader({ request }: Route.LoaderArgs) {
 
   // Return error if verification fails
   if (error) {
-    return data({ error: error.message }, { status: 400 });
+    return data({ error: error.message, title: t("auth.confirm.title") }, { status: 400 });
   }
 
   // Special handling for email change confirmations
   if (validData.type === "email_change") {
     return redirect(
       // @ts-ignore - Supabase returns a message in the user object for email changes
-      `${validData.next}?message=${encodeURIComponent(verifyOtpData.user.msg ?? "Your email has been updated")}`,
+      `${validData.next}?message=${encodeURIComponent(verifyOtpData.user.msg ?? t("auth.confirm.email_change_success"))}`,
       { headers },
     );
   }
@@ -117,10 +120,11 @@ export async function loader({ request }: Route.LoaderArgs) {
  * @param loaderData - Data from the loader containing any error messages
  */
 export default function Confirm({ loaderData }: Route.ComponentProps) {
+  const { t } = useTranslation();
   return (
     <div className="flex flex-col items-center justify-center gap-2.5">
       {/* Display error heading */}
-      <h1 className="text-2xl font-semibold">Confirmation failed</h1>
+      <h1 className="text-2xl font-semibold">{t("auth.confirm.errors.failed")}</h1>
       {/* Display specific error message from Supabase */}
       <p className="text-muted-foreground">{loaderData.error}</p>
     </div>

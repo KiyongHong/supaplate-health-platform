@@ -7,9 +7,26 @@ import { Progress } from "~/core/components/ui/progress";
 import { Label } from "~/core/components/ui/label";
 import { Input } from "~/core/components/ui/input";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
+import { type MetaFunction, type LoaderFunctionArgs } from "react-router";
+import i18next from "~/core/lib/i18next.server";
+
+export async function loader({ request }: LoaderFunctionArgs) {
+    const t = await i18next.getFixedT(request);
+    return { title: t("health.onboarding.title") };
+}
+
+export const meta: MetaFunction<typeof loader> = ({ data }) => {
+  return [
+    {
+      title: `${data?.title ?? "Onboarding"} | ${import.meta.env.VITE_APP_NAME}`,
+    },
+  ];
+};
 
 export default function Onboarding() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [step, setStep] = useState(1); // 1: Select Method, 2: Processing, 3: Success
   const [progress, setProgress] = useState(0);
 
@@ -28,13 +45,13 @@ export default function Onboarding() {
   };
 
   const handleConnectAPI = () => {
-    toast.info("Connecting to Health Insurance API...");
+    toast.info(t("health.onboarding.processing.toast"));
     simulateProcessing();
   };
 
   const handleUploadFile = (e: React.FormEvent) => {
     e.preventDefault();
-    toast.info("Parsing CSV data...");
+    toast.info(t("health.onboarding.processing.parsing_toast"));
     simulateProcessing();
   };
 
@@ -47,11 +64,11 @@ export default function Onboarding() {
                 <Loader2 className="w-8 h-8 text-primary animate-spin" />
             </div>
             <div className="space-y-2">
-                <h2 className="text-xl font-semibold">Analyzing Biological Data</h2>
-                <p className="text-sm text-muted-foreground">Mapping your markers to Peter Attia's frameworks...</p>
+                <h2 className="text-xl font-semibold">{t("health.onboarding.processing.analyzing")}</h2>
+                <p className="text-sm text-muted-foreground">{t("health.onboarding.processing.mapping")}</p>
             </div>
             <Progress value={progress} className="w-full" />
-            <p className="text-xs text-muted-foreground">{Math.round(progress)}% Complete</p>
+            <p className="text-xs text-muted-foreground">{Math.round(progress)}% {t("health.onboarding.steps.processing")}</p>
           </CardContent>
         </Card>
       </div>
@@ -67,13 +84,13 @@ export default function Onboarding() {
                   <CheckCircle className="w-8 h-8 text-green-600 dark:text-green-500" />
               </div>
               <div className="space-y-2">
-                  <h2 className="text-xl font-semibold text-green-700 dark:text-green-400">Analysis Complete</h2>
-                  <p className="text-sm text-muted-foreground">We found 5 biomarkers that need attention.</p>
+                  <h2 className="text-xl font-semibold text-green-700 dark:text-green-400">{t("health.onboarding.success.title")}</h2>
+                  <p className="text-sm text-muted-foreground">{t("health.onboarding.success.description", { count: 5 })}</p>
               </div>
             </CardContent>
             <CardFooter>
                 <Button className="w-full" size="lg" onClick={() => navigate("/dashboard/health")}>
-                    View My Dashboard
+                    {t("health.onboarding.success.button")}
                 </Button>
             </CardFooter>
           </Card>
@@ -84,10 +101,9 @@ export default function Onboarding() {
   return (
     <div className="container max-w-4xl py-20 mx-auto px-4">
       <div className="text-center mb-12 space-y-4">
-        <h1 className="text-3xl font-bold">Import Your Health Data</h1>
+        <h1 className="text-3xl font-bold">{t("health.onboarding.title")}</h1>
         <p className="text-muted-foreground max-w-xl mx-auto">
-          To provide scientific protocols, we need your latest blood work. 
-          Your data is encrypted and never shared.
+          {t("health.onboarding.subtitle")}
         </p>
       </div>
 
@@ -96,38 +112,38 @@ export default function Onboarding() {
              <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent group-hover:from-primary/10" />
             <CardHeader>
                 <Database className="w-10 h-10 text-primary mb-2" />
-                <CardTitle>Connect Health Insurance API</CardTitle>
-                <CardDescription>Authorize via simple ID verification. Fetches data from last 10 years.</CardDescription>
+                <CardTitle>{t("health.onboarding.actions.connect_api.title")}</CardTitle>
+                <CardDescription>{t("health.onboarding.actions.connect_api.description")}</CardDescription>
             </CardHeader>
             <CardContent>
                  <ul className="space-y-2 text-sm text-muted-foreground list-disc pl-4">
-                    <li>Instant import</li>
-                    <li>Verified official records</li>
-                    <li>No manual entry errors</li>
+                    <li>{t("health.onboarding.actions.connect_api.features.instant")}</li>
+                    <li>{t("health.onboarding.actions.connect_api.features.verified")}</li>
+                    <li>{t("health.onboarding.actions.connect_api.features.no_errors")}</li>
                  </ul>
             </CardContent>
             <CardFooter>
-                <Button className="w-full">Connect API</Button>
+                <Button className="w-full">{t("health.onboarding.actions.connect_api.button")}</Button>
             </CardFooter>
         </Card>
 
         <Card className="relative overflow-hidden">
             <CardHeader>
                 <UploadCloud className="w-10 h-10 text-blue-500 mb-2" />
-                <CardTitle>Upload File / Manual Entry</CardTitle>
-                <CardDescription>Upload a PDF or CSV from your hospital.</CardDescription>
+                <CardTitle>{t("health.onboarding.actions.upload.title")}</CardTitle>
+                <CardDescription>{t("health.onboarding.actions.upload.description")}</CardDescription>
             </CardHeader>
             <CardContent>
                  <div className="border-2 border-dashed rounded-lg p-8 text-center space-y-4 hover:bg-muted/50 transition-colors">
                     <FileDown className="w-8 h-8 text-muted-foreground mx-auto" />
                     <div className="text-sm text-muted-foreground">
-                        <span className="font-semibold text-primary">Click to upload</span> or drag and drop
+                        <span className="font-semibold text-primary">{t("health.onboarding.actions.upload.drag_drop")}</span>
                         <br />PDF, JPG, CSV (max 10MB)
                     </div>
                  </div>
             </CardContent>
              <CardFooter>
-                <Button variant="outline" className="w-full" onClick={handleUploadFile}>Upload Report</Button>
+                <Button variant="outline" className="w-full" onClick={handleUploadFile}>{t("health.onboarding.actions.upload.button")}</Button>
             </CardFooter>
         </Card>
       </div>

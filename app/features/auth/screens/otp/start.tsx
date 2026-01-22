@@ -14,6 +14,8 @@ import type { Route } from "./+types/start";
 
 import { Form, data, redirect } from "react-router";
 import { z } from "zod";
+import { useTranslation } from "react-i18next";
+import i18next from "~/core/lib/i18next.server";
 
 import FormButton from "~/core/components/form-button";
 import FormErrors from "~/core/components/form-error";
@@ -33,13 +35,20 @@ import makeServerClient from "~/core/lib/supa-client.server";
  *
  * Sets the page title using the application name from environment variables
  */
-export const meta: Route.MetaFunction = () => {
+export const meta: Route.MetaFunction = ({ data }) => {
   return [
     {
-      title: `OTP Login | ${import.meta.env.VITE_APP_NAME}`,
+      title: `${data?.title ?? "OTP Login"} | ${import.meta.env.VITE_APP_NAME}`,
     },
   ];
 };
+
+export async function loader({ request }: Route.LoaderArgs) {
+  const t = await i18next.getFixedT(request);
+  return {
+    title: t("auth.otp.start.title"),
+  };
+}
 
 /**
  * Form validation schema for OTP start
@@ -76,7 +85,8 @@ export async function action({ request }: Route.ActionArgs) {
 
   // Return validation error if email is invalid
   if (!success) {
-    return data({ error: "Invalid email" }, { status: 400 });
+    const t = await i18next.getFixedT(request);
+    return data({ error: t("auth.magic_link.errors.invalid_email") }, { status: 400 });
   }
 
   // Create Supabase client
@@ -115,16 +125,17 @@ export async function action({ request }: Route.ActionArgs) {
  * @param actionData - Data returned from the form action, including any errors
  */
 export default function OtpStart({ actionData }: Route.ComponentProps) {
+  const { t } = useTranslation();
   return (
     <div className="flex items-center justify-center">
       <Card className="w-full max-w-md">
         {/* Card header with title and description */}
         <CardHeader className="flex flex-col items-center">
           <CardTitle className="text-2xl font-semibold">
-            Enter your email
+            {t("auth.otp.start.header.title")}
           </CardTitle>
           <CardDescription className="text-center text-base">
-            We&apos;ll send you a verification code.
+            {t("auth.otp.start.header.description")}
           </CardDescription>
         </CardHeader>
         <CardContent className="grid gap-4">
@@ -133,18 +144,18 @@ export default function OtpStart({ actionData }: Route.ComponentProps) {
             {/* Email input field */}
             <div className="flex flex-col items-start space-y-2">
               <Label htmlFor="name" className="flex flex-col items-start gap-1">
-                Email
+                {t("auth.otp.start.email.label")}
               </Label>
               <Input
                 id="email"
                 name="email"
                 required
                 type="email"
-                placeholder="nico@supaplate.com"
+                placeholder={t("auth.otp.start.email.placeholder")}
               />
             </div>
             {/* Submit button */}
-            <FormButton label="Send verification code" className="w-full" />
+            <FormButton label={t("auth.otp.start.action")} className="w-full" />
             {/* Error message display */}
             {actionData && "error" in actionData && actionData.error ? (
               <FormErrors errors={[actionData.error]} />

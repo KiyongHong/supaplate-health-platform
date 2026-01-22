@@ -16,6 +16,9 @@
 import type { Route } from "./+types/payments";
 
 import { Link } from "react-router";
+import { useTranslation } from "react-i18next";
+import i18next from "~/core/lib/i18next.server";
+import { type MetaFunction } from "react-router";
 
 import { Button } from "~/core/components/ui/button";
 import { Card } from "~/core/components/ui/card";
@@ -41,8 +44,8 @@ import { getPayments } from "../queries"; // Database query function for payment
  *
  * @returns Array of metadata objects for the page
  */
-export const meta: Route.MetaFunction = () => {
-  return [{ title: `Payments | ${import.meta.env.VITE_APP_NAME}` }];
+export const meta: MetaFunction<typeof loader> = ({ data }) => {
+  return [{ title: `${data?.title} | ${import.meta.env.VITE_APP_NAME}` }];
 };
 
 /**
@@ -78,8 +81,13 @@ export async function loader({ request }: Route.LoaderArgs) {
   // Note: Only fetches payments belonging to the authenticated user
   const payments = await getPayments(client, { userId: user!.id });
   
+  const t = await i18next.getFixedT(request);
   // Return payment data for the component
-  return { payments };
+  return { 
+    payments,
+    title: t("payments.history.title"),
+    locale: t("common.nav.login") === "Login" ? "en-US" : "ko-KR", // Simple heuristic for date/currency locale
+  };
 }
 
 /**
@@ -102,8 +110,9 @@ export async function loader({ request }: Route.LoaderArgs) {
  * @returns JSX element representing the payments history page
  */
 export default function Payments({ loaderData }: Route.ComponentProps) {
+  const { t } = useTranslation();
   // Extract payment history from loader data
-  const { payments } = loaderData;
+  const { payments, locale } = loaderData;
   
   return (
     <div className="flex w-full flex-col items-center gap-10 pt-0 pb-8">
@@ -112,25 +121,25 @@ export default function Payments({ loaderData }: Route.ComponentProps) {
         {/* Handle empty state when no payments exist */}
         {payments.length === 0 ? (
           <div className="flex flex-col items-center gap-4">
-            <p className="text-muted-foreground text-lg">No payments found.</p>
+            <p className="text-muted-foreground text-lg">{t("payments.history.empty_state")}</p>
             <Button asChild>
-              <Link to="/payments/checkout">Make a test payment &rarr;</Link>
+              <Link to="/payments/checkout">{t("payments.history.cta")} &rarr;</Link>
             </Button>
           </div>
         ) : (
           /* Payment history table */
           <Table>
-            <TableCaption>A list of your recent payments.</TableCaption>
+            <TableCaption>{t("payments.history.table.caption")}</TableCaption>
             
             {/* Table header with column titles */}
             <TableHeader>
               <TableRow>
-                <TableHead className="w-[100px]">Order ID</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Product</TableHead>
-                <TableHead>Amount</TableHead>
-                <TableHead>Date</TableHead>
-                <TableHead>Receipt</TableHead>
+                <TableHead className="w-[100px]">{t("payments.history.table.order_id")}</TableHead>
+                <TableHead>{t("payments.history.table.status")}</TableHead>
+                <TableHead>{t("payments.history.table.product")}</TableHead>
+                <TableHead>{t("payments.history.table.amount")}</TableHead>
+                <TableHead>{t("payments.history.table.date")}</TableHead>
+                <TableHead>{t("payments.history.table.receipt")}</TableHead>
               </TableRow>
             </TableHeader>
             
@@ -151,7 +160,7 @@ export default function Payments({ loaderData }: Route.ComponentProps) {
                   
                   {/* Amount column with currency formatting */}
                   <TableCell>
-                    {payment.total_amount.toLocaleString("en-US", {
+                    {payment.total_amount.toLocaleString(locale, {
                       style: "currency",
                       currency: "KRW",
                     })}
@@ -159,7 +168,7 @@ export default function Payments({ loaderData }: Route.ComponentProps) {
                   
                   {/* Date column with localized formatting */}
                   <TableCell>
-                    {new Date(payment.created_at).toLocaleDateString("ko-KR", {
+                    {new Date(payment.created_at).toLocaleDateString(locale, {
                       year: "numeric",
                       month: "long",
                       day: "numeric",
@@ -173,7 +182,7 @@ export default function Payments({ loaderData }: Route.ComponentProps) {
                       target="_blank"
                       className="hover:underline"
                     >
-                      View receipt &rarr;
+                      {t("payments.history.table.view_receipt")} &rarr;
                     </Link>
                   </TableCell>
                 </TableRow>

@@ -17,6 +17,8 @@ import { useEffect, useRef } from "react";
 import { redirect } from "react-router";
 import { Form, data, useLoaderData } from "react-router";
 import { z } from "zod";
+import { useTranslation } from "react-i18next";
+import i18next from "~/core/lib/i18next.server";
 
 import FormButton from "~/core/components/form-button";
 import FormErrors from "~/core/components/form-error";
@@ -36,13 +38,20 @@ import makeServerClient from "~/core/lib/supa-client.server";
  *
  * Sets the page title using the application name from environment variables
  */
-export const meta: Route.MetaFunction = () => {
+export const meta: Route.MetaFunction = ({ data }) => {
   return [
     {
-      title: `Update password | ${import.meta.env.VITE_APP_NAME}`,
+      title: `${data?.title ?? "Update password"} | ${import.meta.env.VITE_APP_NAME}`,
     },
   ];
 };
+
+export async function loader({ request }: Route.LoaderArgs) {
+  const t = await i18next.getFixedT(request);
+  return {
+    title: t("auth.new_password.title"),
+  };
+}
 
 /**
  * Form validation schema for password update
@@ -133,6 +142,7 @@ export async function action({ request }: Route.ActionArgs) {
  * @param actionData - Data returned from the form action, including errors or success status
  */
 export default function ChangePassword({ actionData }: Route.ComponentProps) {
+  const { t } = useTranslation();
   // Reference to the form element for resetting after successful submission
   const formRef = useRef<HTMLFormElement>(null);
   
@@ -152,10 +162,10 @@ export default function ChangePassword({ actionData }: Route.ComponentProps) {
       <Card className="w-full max-w-md">
         <CardHeader className="flex flex-col items-center">
           <CardTitle className="text-2xl font-semibold">
-            Update your password
+            {t("auth.new_password.header.title")}
           </CardTitle>
           <CardDescription className="text-center text-base">
-            Enter your new password and confirm it.
+            {t("auth.new_password.header.description")}
           </CardDescription>
         </CardHeader>
         <CardContent className="grid gap-4">
@@ -166,14 +176,14 @@ export default function ChangePassword({ actionData }: Route.ComponentProps) {
           >
             <div className="flex flex-col items-start space-y-2">
               <Label htmlFor="name" className="flex flex-col items-start gap-1">
-                Password
+                {t("auth.new_password.password.label")}
               </Label>
               <Input
                 id="password"
                 name="password"
                 required
                 type="password"
-                placeholder="Enter your new password"
+                placeholder={t("auth.new_password.password.placeholder")}
               />
               {actionData &&
               "fieldErrors" in actionData &&
@@ -183,14 +193,14 @@ export default function ChangePassword({ actionData }: Route.ComponentProps) {
             </div>
             <div className="flex flex-col items-start space-y-2">
               <Label htmlFor="name" className="flex flex-col items-start gap-1">
-                Confirm password
+                {t("auth.new_password.confirm_password.label")}
               </Label>
               <Input
                 id="confirmPassword"
                 name="confirmPassword"
                 required
                 type="password"
-                placeholder="Confirm your new password"
+                placeholder={t("auth.new_password.confirm_password.placeholder")}
               />
               {actionData &&
               "fieldErrors" in actionData &&
@@ -198,14 +208,14 @@ export default function ChangePassword({ actionData }: Route.ComponentProps) {
                 <FormErrors errors={actionData.fieldErrors.confirmPassword} />
               ) : null}
             </div>
-            <FormButton label="Update password" />
+            <FormButton label={t("auth.new_password.action")} />
             {actionData && "error" in actionData && actionData.error ? (
               <FormErrors errors={[actionData.error]} />
             ) : null}
             {actionData && "success" in actionData && actionData.success ? (
               <div className="flex items-center justify-center gap-2 text-sm text-green-500">
                 <CheckCircle2Icon className="size-4" />
-                <p>Password updated successfully.</p>
+                <p>{t("auth.new_password.success")}</p>
               </div>
             ) : null}
           </Form>

@@ -17,6 +17,8 @@ import { CheckCircle2Icon } from "lucide-react";
 import { useEffect, useRef } from "react";
 import { Form, Link, data } from "react-router";
 import { z } from "zod";
+import { useTranslation, Trans } from "react-i18next";
+import i18next from "~/core/lib/i18next.server";
 
 import FormButton from "~/core/components/form-button";
 import FormErrors from "~/core/components/form-error";
@@ -45,13 +47,20 @@ import { doesUserExist } from "../lib/queries.server";
  *
  * Sets the page title using the application name from environment variables
  */
-export const meta: Route.MetaFunction = () => {
+export const meta: Route.MetaFunction = ({ data }) => {
   return [
     {
-      title: `Create an account | ${import.meta.env.VITE_APP_NAME}`,
+      title: `${data?.title ?? "Create an account"} | ${import.meta.env.VITE_APP_NAME}`,
     },
   ];
 };
+
+export async function loader({ request }: Route.LoaderArgs) {
+  const t = await i18next.getFixedT(request);
+  return {
+    title: t("auth.register.title"),
+  };
+}
 
 /**
  * Form validation schema for user registration
@@ -172,6 +181,7 @@ export async function action({ request }: Route.ActionArgs) {
  * @param actionData - Data returned from the form action, including errors or success status
  */
 export default function Join({ actionData }: Route.ComponentProps) {
+  const { t } = useTranslation();
   // Reference to the form element for resetting after successful submission
   const formRef = useRef<HTMLFormElement>(null);
   
@@ -187,10 +197,10 @@ export default function Join({ actionData }: Route.ComponentProps) {
       <Card className="w-full max-w-md">
         <CardHeader className="flex flex-col items-center">
           <CardTitle className="text-2xl font-semibold" role="heading">
-            Create an account
+            {t("auth.register.header.title")}
           </CardTitle>
           <CardDescription className="text-base">
-            Enter your details to create an account
+            {t("auth.register.header.description")}
           </CardDescription>
         </CardHeader>
         <CardContent className="grid gap-4">
@@ -201,14 +211,14 @@ export default function Join({ actionData }: Route.ComponentProps) {
           >
             <div className="flex flex-col items-start space-y-2">
               <Label htmlFor="name" className="flex flex-col items-start gap-1">
-                Name
+                {t("auth.register.name.label")}
               </Label>
               <Input
                 id="name"
                 name="name"
                 required
                 type="text"
-                placeholder="Nico"
+                placeholder={t("auth.register.name.placeholder")}
               />
               {actionData &&
               "fieldErrors" in actionData &&
@@ -221,14 +231,14 @@ export default function Join({ actionData }: Route.ComponentProps) {
                 htmlFor="email"
                 className="flex flex-col items-start gap-1"
               >
-                Email
+                 {t("auth.register.email.label")}
               </Label>
               <Input
                 id="email"
                 name="email"
                 required
                 type="email"
-                placeholder="nico@supaplate.com"
+                placeholder={t("auth.register.email.placeholder")}
               />
               {actionData &&
               "fieldErrors" in actionData &&
@@ -241,9 +251,9 @@ export default function Join({ actionData }: Route.ComponentProps) {
                 htmlFor="password"
                 className="flex flex-col items-start gap-1"
               >
-                Password
+                 {t("auth.register.password.label")}
                 <small className="text-muted-foreground">
-                  Must be at least 8 characters.
+                   {t("auth.register.password.hint")}
                 </small>
               </Label>
               <Input
@@ -251,7 +261,7 @@ export default function Join({ actionData }: Route.ComponentProps) {
                 name="password"
                 required
                 type="password"
-                placeholder="Enter your password"
+                placeholder={t("auth.register.password.placeholder")}
               />
               {actionData &&
               "fieldErrors" in actionData &&
@@ -264,14 +274,14 @@ export default function Join({ actionData }: Route.ComponentProps) {
                 htmlFor="confirmPassword"
                 className="flex flex-col items-start gap-1"
               >
-                Confirm password
+                 {t("auth.register.confirm_password.label")}
               </Label>
               <Input
                 id="confirmPassword"
                 name="confirmPassword"
                 required
                 type="password"
-                placeholder="Confirm your password"
+                placeholder={t("auth.register.confirm_password.placeholder")}
               />
               {actionData &&
               "fieldErrors" in actionData &&
@@ -279,7 +289,7 @@ export default function Join({ actionData }: Route.ComponentProps) {
                 <FormErrors errors={actionData.fieldErrors.confirmPassword} />
               ) : null}
             </div>
-            <FormButton label="Create account" className="w-full" />
+            <FormButton label={t("auth.register.action")} className="w-full" />
             {actionData && "error" in actionData && actionData.error ? (
               <FormErrors errors={[actionData.error]} />
             ) : null}
@@ -287,28 +297,28 @@ export default function Join({ actionData }: Route.ComponentProps) {
             <div className="flex items-center gap-2">
               <Checkbox id="marketing" name="marketing" />
               <Label htmlFor="marketing" className="text-muted-foreground">
-                Sign up for marketing emails
+                {t("auth.register.marketing")}
               </Label>
             </div>
             <div className="flex items-center gap-2">
               <Checkbox id="terms" name="terms" checked />
               <Label htmlFor="terms" className="text-muted-foreground">
                 <span>
-                  I have read and agree to the{" "}
+                  {t("auth.register.terms.text")}{" "}
                   <Link
                     to="/legal/terms-of-service"
                     viewTransition
                     className="text-muted-foreground text-underline hover:text-foreground underline transition-colors"
                   >
-                    Terms of Service
+                    {t("auth.register.terms.tos")}
                   </Link>{" "}
-                  and{" "}
+                  {t("auth.register.terms.and")}{" "}
                   <Link
                     to="/legal/privacy-policy"
                     viewTransition
                     className="text-muted-foreground hover:text-foreground text-underline underline transition-colors"
                   >
-                    Privacy Policy
+                    {t("auth.register.terms.privacy")}
                   </Link>
                 </span>
               </Label>
@@ -319,10 +329,9 @@ export default function Join({ actionData }: Route.ComponentProps) {
                   className="size-4"
                   color="oklch(0.627 0.194 149.214)"
                 />
-                <AlertTitle>Account created!</AlertTitle>
+                <AlertTitle>{t("auth.register.success.title")}</AlertTitle>
                 <AlertDescription className="text-green-700 dark:text-green-600">
-                  Before you can sign in, please verify your email. You can
-                  close this tab.
+                  {t("auth.register.success.description")}
                 </AlertDescription>
               </Alert>
             ) : null}
@@ -332,14 +341,14 @@ export default function Join({ actionData }: Route.ComponentProps) {
       </Card>
       <div className="flex flex-col items-center justify-center text-sm">
         <p className="text-muted-foreground">
-          Already have an account?{" "}
+          {t("auth.register.already_have_account")}{" "}
           <Link
             to="/login"
             viewTransition
             data-testid="form-signin-link"
             className="text-muted-foreground hover:text-foreground text-underline underline transition-colors"
           >
-            Sign in
+            {t("auth.register.sign_in")}
           </Link>
         </p>
       </div>

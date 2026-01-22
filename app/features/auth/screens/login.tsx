@@ -12,6 +12,8 @@ import { AlertCircle, Loader2Icon } from "lucide-react";
 import { useRef } from "react";
 import { Form, Link, data, redirect, useFetcher } from "react-router";
 import { z } from "zod";
+import { useTranslation } from "react-i18next";
+import i18next from "~/core/lib/i18next.server";
 
 import FormButton from "~/core/components/form-button";
 import {
@@ -39,13 +41,20 @@ import { SignInButtons } from "../components/auth-login-buttons";
  *
  * Sets the page title using the application name from environment variables
  */
-export const meta: Route.MetaFunction = () => {
+export const meta: Route.MetaFunction = ({ data }) => {
   return [
     {
-      title: `Log in | ${import.meta.env.VITE_APP_NAME}`,
+      title: `${data?.title ?? "Log in"} | ${import.meta.env.VITE_APP_NAME}`,
     },
   ];
 };
+
+export async function loader({ request }: Route.LoaderArgs) {
+  const t = await i18next.getFixedT(request);
+  return {
+    title: t("auth.login.title"),
+  };
+}
 
 /**
  * Form validation schema for login
@@ -123,6 +132,7 @@ export async function action({ request }: Route.ActionArgs) {
  * @param actionData - Data returned from the form action, including any errors
  */
 export default function Login({ actionData }: Route.ComponentProps) {
+  const { t } = useTranslation();
   // Reference to the form element for accessing form data
   const formRef = useRef<HTMLFormElement>(null);
 
@@ -153,10 +163,10 @@ export default function Login({ actionData }: Route.ComponentProps) {
       <Card className="w-full max-w-md">
         <CardHeader className="flex flex-col items-center">
           <CardTitle className="text-2xl font-semibold">
-            Sign into your account
+            {t("auth.login.header.title")}
           </CardTitle>
           <CardDescription className="text-base">
-            Please enter your details
+            {t("auth.login.header.description")}
           </CardDescription>
         </CardHeader>
         <CardContent className="grid gap-4">
@@ -170,14 +180,14 @@ export default function Login({ actionData }: Route.ComponentProps) {
                 htmlFor="email"
                 className="flex flex-col items-start gap-1"
               >
-                Email
+                {t("auth.login.email.label")}
               </Label>
               <Input
                 id="email"
                 name="email"
                 required
                 type="email"
-                placeholder="i.e nico@supaplate.com"
+                placeholder={t("auth.login.email.placeholder")}
               />
               {actionData &&
               "fieldErrors" in actionData &&
@@ -191,7 +201,7 @@ export default function Login({ actionData }: Route.ComponentProps) {
                   htmlFor="password"
                   className="flex flex-col items-start gap-1"
                 >
-                  Password
+                  {t("auth.login.password.label")}
                 </Label>
                 <Link
                   to="/auth/forgot-password/reset"
@@ -199,7 +209,7 @@ export default function Login({ actionData }: Route.ComponentProps) {
                   tabIndex={-1}
                   viewTransition
                 >
-                  Forgot your password?
+                  {t("auth.login.forgot_password")}
                 </Link>
               </div>
               <Input
@@ -207,7 +217,7 @@ export default function Login({ actionData }: Route.ComponentProps) {
                 name="password"
                 required
                 type="password"
-                placeholder="Enter your password"
+                placeholder={t("auth.login.password.placeholder")}
               />
 
               {actionData &&
@@ -216,20 +226,20 @@ export default function Login({ actionData }: Route.ComponentProps) {
                 <FormErrors errors={actionData.fieldErrors.password} />
               ) : null}
             </div>
-            <FormButton label="Log in" className="w-full" />
+            <FormButton label={t("auth.login.action")} className="w-full" />
             {actionData && "error" in actionData ? (
               actionData.error === "Email not confirmed" ? (
                 <Alert variant="destructive" className="bg-destructive/10">
                   <AlertCircle className="h-4 w-4" />
-                  <AlertTitle>Email not confirmed</AlertTitle>
+                  <AlertTitle>{t("auth.login.errors.email_not_confirmed")}</AlertTitle>
                   <AlertDescription className="flex flex-col items-start gap-2">
-                    Before signing in, please verify your email.
+                    {t("auth.login.errors.before_verify")}
                     <Button
                       variant="outline"
                       className="text-foreground flex items-center justify-between gap-2"
                       onClick={onResendClick}
                     >
-                      Resend confirmation email
+                      {t("auth.login.errors.resend_confirmation")}
                       {fetcher.state === "submitting" ? (
                         <Loader2Icon
                           data-testid="resend-confirmation-email-spinner"
@@ -249,14 +259,14 @@ export default function Login({ actionData }: Route.ComponentProps) {
       </Card>
       <div className="flex flex-col items-center justify-center text-sm">
         <p className="text-muted-foreground">
-          Don't have an account?{" "}
+          {t("auth.login.no_account")}{" "}
           <Link
             to="/join"
             viewTransition
             data-testid="form-signup-link"
             className="text-muted-foreground hover:text-foreground text-underline underline transition-colors"
           >
-            Sign up
+            {t("auth.login.sign_up")}
           </Link>
         </p>
       </div>

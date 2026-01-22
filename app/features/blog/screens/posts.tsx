@@ -19,6 +19,8 @@ import path from "node:path";
 import { Link } from "react-router";
 
 import { Badge } from "~/core/components/ui/badge";
+import { useTranslation } from "react-i18next";
+import i18next from "~/core/lib/i18next.server";
 
 /**
  * Meta function for the blog posts page
@@ -26,10 +28,10 @@ import { Badge } from "~/core/components/ui/badge";
  * Sets the page title using the application name from environment variables
  * and adds a meta description for SEO purposes
  */
-export const meta: Route.MetaFunction = () => {
+export const meta: Route.MetaFunction = ({ data }) => {
   return [
-    { title: `Supablog | ${import.meta.env.VITE_APP_NAME}` },
-    { name: "description", content: "Follow our development journey!" },
+    { title: `${data?.title} | ${import.meta.env.VITE_APP_NAME}` },
+    { name: "description", content: data?.description },
   ];
 };
 
@@ -65,7 +67,8 @@ interface Frontmatter {
  *
  * @returns Object containing an array of blog post frontmatter data
  */
-export async function loader() {
+export async function loader({ request }: Route.LoaderArgs) {
+  const t = await i18next.getFixedT(request);
   // Get the path to the docs directory containing MDX files
   const docsPath = path.join(process.cwd(), "app", "features", "blog", "docs");
 
@@ -92,6 +95,8 @@ export async function loader() {
   // Return the frontmatter data
   return {
     frontmatters: frontmatters as Frontmatter[],
+    title: t("blog.posts.title"),
+    description: t("blog.posts.description"),
   };
 }
 
@@ -118,15 +123,16 @@ export async function loader() {
 export default function Posts({
   loaderData: { frontmatters },
 }: Route.ComponentProps) {
+  const { t } = useTranslation();
   return (
     <div className="flex flex-col gap-16">
       {/* Page header with title and subtitle */}
       <header className="flex flex-col items-center">
         <h1 className="text-center text-3xl font-semibold tracking-tight md:text-5xl">
-          Blog
+          {t("blog.posts.title")}
         </h1>
         <p className="text-muted-foreground mt-2 text-center font-medium md:text-lg">
-          Follow our development journey!
+          {t("blog.posts.description")}
         </p>
       </header>
 
@@ -160,8 +166,10 @@ export default function Posts({
               </p>
               {/* Author and date information */}
               <span className="text-muted-foreground mt-2 block text-sm">
-                By {frontmatter.author} on{" "}
-                {new Date(frontmatter.date).toLocaleDateString("ko-KR")}
+                {t("blog.posts.author_on", {
+                  author: frontmatter.author,
+                  date: new Date(frontmatter.date).toLocaleDateString("ko-KR"),
+                })}
               </span>
             </div>
           </Link>

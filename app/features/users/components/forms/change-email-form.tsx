@@ -15,8 +15,10 @@ import {
 } from "~/core/components/ui/card";
 import { Input } from "~/core/components/ui/input";
 import { Label } from "~/core/components/ui/label";
+import { useTranslation } from "react-i18next";
 
 export default function ChangeEmailForm({ email }: { email: string }) {
+  const { t } = useTranslation();
   const fetcher = useFetcher<Route.ComponentProps["actionData"]>();
   const formRef = useRef<HTMLFormElement>(null);
   useEffect(() => {
@@ -39,11 +41,15 @@ export default function ChangeEmailForm({ email }: { email: string }) {
     >
       <Card className="justify-between">
         <CardHeader>
-          <CardTitle>{email ? "Change email" : "Add email"}</CardTitle>
+          <CardTitle>
+            {email 
+              ? t("users.account.forms.change_email.title") 
+              : t("users.account.forms.change_email.add_title")}
+          </CardTitle>
           <CardDescription>
             {email
-              ? "Change your email address."
-              : "Add an email address to your account."}
+              ? t("users.account.forms.change_email.description")
+              : t("users.account.forms.change_email.add_description")}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -53,7 +59,7 @@ export default function ChangeEmailForm({ email }: { email: string }) {
                 htmlFor="currentEmail"
                 className="flex flex-col items-start gap-1"
               >
-                Current email
+                {t("users.account.forms.change_email.fields.current_email.label")}
               </Label>
               <Input
                 id="currentEmail"
@@ -69,7 +75,7 @@ export default function ChangeEmailForm({ email }: { email: string }) {
                 htmlFor="email"
                 className="flex flex-col items-start gap-1"
               >
-                New email
+                {t("users.account.forms.change_email.fields.new_email.label")}
               </Label>
               <Input id="email" name="email" required type="email" />
             </div>
@@ -77,13 +83,15 @@ export default function ChangeEmailForm({ email }: { email: string }) {
         </CardContent>
         <CardFooter className="flex flex-col gap-4">
           <FetcherFormButton
-            label={email ? "Change email" : "Add email"}
+            label={email 
+              ? t("users.account.forms.change_email.action.change")
+              : t("users.account.forms.change_email.action.add")}
             className="w-full"
             submitting={fetcher.state === "submitting"}
             disabled={fetcher.state === "submitting"}
           />
           {fetcher.data && "success" in fetcher.data && fetcher.data.success ? (
-            <FormSuccess message="Email update process started. Please check your old email for a verification link." />
+            <FormSuccess message={t("users.account.forms.change_email.success")} />
           ) : null}
           {fetcher.data && "error" in fetcher.data && fetcher.data.error ? (
             <FormErrors errors={[fetcher.data.error]} />

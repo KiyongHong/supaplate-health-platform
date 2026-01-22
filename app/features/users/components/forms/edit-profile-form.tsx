@@ -22,6 +22,7 @@ import {
 import { Checkbox } from "~/core/components/ui/checkbox";
 import { Input } from "~/core/components/ui/input";
 import { Label } from "~/core/components/ui/label";
+import { useTranslation } from "react-i18next";
 
 export default function EditProfileForm({
   name,
@@ -32,6 +33,7 @@ export default function EditProfileForm({
   marketingConsent: boolean;
   avatarUrl: string | null;
 }) {
+  const { t } = useTranslation();
   const fetcher = useFetcher<Route.ComponentProps["actionData"]>();
   const formRef = useRef<HTMLFormElement>(null);
   useEffect(() => {
@@ -59,8 +61,8 @@ export default function EditProfileForm({
     >
       <Card className="justify-between">
         <CardHeader>
-          <CardTitle>Edit profile</CardTitle>
-          <CardDescription>Manage your profile information.</CardDescription>
+          <CardTitle>{t("users.account.forms.edit_profile.title")}</CardTitle>
+          <CardDescription>{t("users.account.forms.edit_profile.description")}</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="flex w-full flex-col gap-7">
@@ -69,7 +71,7 @@ export default function EditProfileForm({
                 htmlFor="avatar"
                 className="flex flex-col items-start gap-2"
               >
-                <span>Avatar</span>
+                <span>{t("users.account.forms.edit_profile.fields.avatar.label")}</span>
                 <Avatar className="size-24">
                   {avatar ? <AvatarImage src={avatar} alt="Avatar" /> : null}
                   <AvatarFallback>
@@ -79,8 +81,8 @@ export default function EditProfileForm({
               </Label>
               <div className="text-muted-foreground flex w-1/2 flex-col gap-2 text-sm">
                 <div className="flex flex-col gap-1">
-                  <span>Max size: 1MB</span>
-                  <span>Allowed formats: PNG, JPG, GIF</span>
+                  <span>{t("users.account.forms.edit_profile.fields.avatar.max_size")}</span>
+                  <span>{t("users.account.forms.edit_profile.fields.avatar.formats")}</span>
                 </div>
                 <Input
                   id="avatar"
@@ -92,14 +94,14 @@ export default function EditProfileForm({
             </div>
             <div className="flex flex-col items-start space-y-2">
               <Label htmlFor="name" className="flex flex-col items-start gap-1">
-                Name
+                {t("users.account.forms.edit_profile.fields.name.label")}
               </Label>
               <Input
                 id="name"
                 name="name"
                 required
                 type="text"
-                placeholder="Nico"
+                placeholder={t("users.account.forms.edit_profile.fields.name.placeholder")}
                 defaultValue={name}
               />
               {fetcher.data &&
@@ -115,7 +117,7 @@ export default function EditProfileForm({
                 defaultChecked={marketingConsent}
               />
               <Label htmlFor="marketingConsent">
-                Consent to marketing emails
+                {t("users.account.forms.edit_profile.fields.marketing_consent.label")}
               </Label>
             </div>
             {fetcher.data &&
@@ -130,11 +132,11 @@ export default function EditProfileForm({
         <CardFooter className="flex flex-col gap-4">
           <FetcherFormButton
             submitting={fetcher.state === "submitting"}
-            label="Save profile"
+            label={t("users.account.forms.edit_profile.action.save")}
             className="w-full"
           />
           {fetcher.data && "success" in fetcher.data && fetcher.data.success ? (
-            <FormSuccess message="Profile updated" />
+            <FormSuccess message={t("users.account.forms.edit_profile.success")} />
           ) : null}
           {fetcher.data && "error" in fetcher.data && fetcher.data.error ? (
             <FormErrors errors={[fetcher.data.error]} />

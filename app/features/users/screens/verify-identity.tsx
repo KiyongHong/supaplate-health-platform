@@ -7,10 +7,19 @@ import makeServerClient from "~/core/lib/supa-client.server";
 import { processAndSaveCheckup } from "~/features/health/services/checkup.server";
 import { fetchHealthDataFromAPI } from "~/features/health/services/health-api.server";
 import { IdentityVerification } from "~/features/users/components/identity-verification";
+import i18next from "~/core/lib/i18next.server";
+import { useTranslation } from "react-i18next";
 
-export const meta: Route.MetaFunction = () => {
-  return [{ title: "Verify Identity | Health Platform" }];
+export const meta: Route.MetaFunction = ({ data }: { data: { title?: string } }) => {
+  return [{ title: data?.title ?? "Verify Identity | Health Platform" }];
 };
+
+export async function loader({ request }: Route.LoaderArgs) {
+  const t = await i18next.getFixedT(request);
+  return {
+    title: t("users.verify_identity.title"),
+  };
+}
 
 export async function action({ request }: Route.ActionArgs) {
   const [client] = makeServerClient(request);
@@ -65,9 +74,10 @@ export async function action({ request }: Route.ActionArgs) {
 }
 
 export default function VerifyIdentityScreen() {
+  const { t } = useTranslation();
   return (
     <div className="container max-w-lg py-10">
-      <h1 className="text-2xl font-bold mb-6 text-center">Verify Your Identity</h1>
+      <h1 className="text-2xl font-bold mb-6 text-center">{t("users.verify_identity.header")}</h1>
       <IdentityVerification />
     </div>
   );

@@ -28,6 +28,8 @@ import {
   TypographyP,
 } from "~/core/components/mdx-typography";
 import { Badge } from "~/core/components/ui/badge";
+import { useTranslation } from "react-i18next";
+import i18next from "~/core/lib/i18next.server";
 
 /**
  * Meta function for the blog post page
@@ -44,40 +46,42 @@ import { Badge } from "~/core/components/ui/badge";
  * @returns An array of meta tag objects for the page
  */
 export const meta: Route.MetaFunction = ({ data }) => {
-  // Handle case where post is not found
-  if (!data) {
+  // Handle case where post is not found or error
+  if (!data || !("frontmatter" in data)) {
     return [
       {
-        title: `404 Page Not Found | ${import.meta.env.VITE_APP_NAME}`,
+        title: `${(data as any)?.not_found ?? "404 Page Not Found"} | ${import.meta.env.VITE_APP_NAME}`,
       },
     ];
   }
-  
+
+  const { frontmatter } = data as { frontmatter: any };
+
   // Generate meta tags for found posts
   return [
     // Page title with post title and app name
     {
-      title: `${data.frontmatter.title} | ${import.meta.env.VITE_APP_NAME}`,
+      title: `${frontmatter.title} | ${import.meta.env.VITE_APP_NAME}`,
     },
     // Meta description for search engines
     {
       name: "description",
-      content: data.frontmatter.description,
+      content: frontmatter.description,
     },
     // Open Graph image for social media previews
     {
       name: "og:image",
-      content: `http://localhost:5173/api/blog/og?slug=${data.frontmatter.slug}`,
+      content: `http://localhost:5173/api/blog/og?slug=${frontmatter.slug}`,
     },
     // Open Graph title for social media previews
     {
       name: "og:title",
-      content: data.frontmatter.title,
+      content: frontmatter.title,
     },
     // Open Graph description for social media previews
     {
       name: "og:description",
-      content: data.frontmatter.description,
+      content: frontmatter.description,
     },
   ];
 };
@@ -98,7 +102,8 @@ export const meta: Route.MetaFunction = ({ data }) => {
  * @returns The processed MDX code and frontmatter metadata
  * @throws 404 error if the post is not found, 500 error for other issues
  */
-export async function loader({ params }: Route.LoaderArgs) {
+export async function loader({ params, request }: Route.LoaderArgs) {
+  const t = await i18next.getFixedT(request);
   // Construct the full path to the MDX file based on the slug parameter
   const filePath = path.join(
     process.cwd(),
@@ -119,11 +124,12 @@ export async function loader({ params }: Route.LoaderArgs) {
     return {
       frontmatter,
       code,
+      not_found: t("blog.post.not_found"),
     };
   } catch (error) {
     // Handle file not found errors with a 404 response
     if (error instanceof Error && "code" in error && error.code === "ENOENT") {
-      throw data(null, { status: 404 });
+      return data({ not_found: t("blog.post.not_found") }, { status: 404 });
     }
     // Handle all other errors with a 500 response
     throw data(null, { status: 500 });
@@ -145,8 +151,20 @@ export async function loader({ params }: Route.LoaderArgs) {
  * @param loaderData - Data from the loader containing frontmatter and compiled MDX code
  */
 export default function Post({
-  loaderData: { frontmatter, code },
+  loaderData,
 }: Route.ComponentProps) {
+  const { t } = useTranslation();
+
+  if (!("frontmatter" in loaderData)) {
+    return (
+      <div className="py-20 text-center">
+        <h1 className="text-2xl font-bold">{loaderData.not_found}</h1>
+      </div>
+    );
+  }
+
+  const { frontmatter, code } = loaderData;
+
   // Convert the compiled MDX code into a React component
   const MDXContent = getMDXComponent(code);
   
@@ -161,8 +179,10 @@ export default function Post({
           </h1>
         </div>
         <span className="text-muted-foreground">
-          {frontmatter.author} on{" "}
-          {new Date(frontmatter.date).toLocaleDateString("ko-KR")}
+          {t("blog.post.author_on", {
+            author: frontmatter.author,
+            date: new Date(frontmatter.date).toLocaleDateString("ko-KR"),
+          })}
         </span>
       </header>
       

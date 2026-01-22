@@ -15,9 +15,11 @@ import makeServerClient from "~/core/lib/supa-client.server";
 import { getHealthCheckups } from "~/features/health/queries.server";
 import { getRecommendations } from "~/features/protocols/services/recommendation.server";
 import type { Route } from "./+types/dashboard";
+import { useTranslation } from "react-i18next";
+import i18next from "~/core/lib/i18next.server";
 
-export const meta: Route.MetaFunction = () => {
-  return [{ title: `Dashboard | ${import.meta.env.VITE_APP_NAME}` }];
+export const meta: Route.MetaFunction = ({ data }) => {
+  return [{ title: data?.title ?? `Dashboard | ${import.meta.env.VITE_APP_NAME}` }];
 };
 
 import { getUserProfile } from "~/features/users/queries.server";
@@ -49,7 +51,8 @@ export async function loader({ request }: Route.LoaderArgs) {
      recommendations = await getRecommendations(latestCheckup.analysis_result as any);
   }
 
-  return { user: finalUser, latestCheckup, recommendations };
+  const t = await i18next.getFixedT(request);
+  return { user: finalUser, latestCheckup, recommendations, title: t("users.dashboard.title") };
 }
 
 export async function action({ request }: Route.ActionArgs) {
@@ -74,6 +77,7 @@ function RiskBadge({ status }: { status: string }) {
 }
 
 export default function Dashboard({ loaderData }: Route.ComponentProps) {
+  const { t } = useTranslation();
   const { user, latestCheckup, recommendations } = loaderData;
   const analysis = latestCheckup?.analysis_result as Record<string, any> | undefined;
 
@@ -82,15 +86,15 @@ export default function Dashboard({ loaderData }: Route.ComponentProps) {
       {/* Header Section */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Health Dashboard</h1>
+          <h1 className="text-3xl font-bold tracking-tight">{t("users.dashboard.header")}</h1>
           <p className="text-muted-foreground mt-1">
-            Welcome back, {(user as any).name || (user as any).user_metadata?.name || (user as any).email}
+            {t("users.dashboard.welcome", { name: (user as any).name || (user as any).user_metadata?.name || (user as any).email })}
           </p>
         </div>
         <div className="flex gap-2">
            {!latestCheckup && (
              <Button asChild variant="outline">
-               <a href="/dashboard/verify-identity">Verify Identity to Start</a>
+               <a href="/dashboard/verify-identity">{t("users.dashboard.verify_identity_to_start")}</a>
               </Button>
            )}
           <form method="post">
@@ -105,12 +109,12 @@ export default function Dashboard({ loaderData }: Route.ComponentProps) {
         <Card className="bg-muted/30 border-dashed">
           <CardContent className="flex flex-col items-center justify-center py-12 text-center">
             <Activity className="h-12 w-12 text-muted-foreground mb-4" />
-            <h3 className="text-lg font-semibold">No Health Data Available</h3>
+            <h3 className="text-lg font-semibold">{t("users.dashboard.no_data.title")}</h3>
             <p className="text-muted-foreground max-w-sm mt-2 mb-6">
-              Complete the identity verification to fetch your health checkup records and get your personalized analysis.
+              {t("users.dashboard.no_data.description")}
             </p>
             <Button asChild>
-              <a href="/dashboard/verify-identity">Verify Identity Now</a>
+              <a href="/dashboard/verify-identity">{t("users.dashboard.no_data.action")}</a>
             </Button>
           </CardContent>
         </Card>
@@ -120,13 +124,13 @@ export default function Dashboard({ loaderData }: Route.ComponentProps) {
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
              <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Overall Health Score</CardTitle>
+                <CardTitle className="text-sm font-medium">{t("users.dashboard.health_score.title")}</CardTitle>
                 <Activity className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">{analysis?.overall_score ?? "N/A"} / 100</div>
                  <p className="text-xs text-muted-foreground mt-1">
-                  Based on Peter Attia's Strict Criteria
+                  {t("users.dashboard.health_score.description")}
                 </p>
               </CardContent>
             </Card>
@@ -134,7 +138,7 @@ export default function Dashboard({ loaderData }: Route.ComponentProps) {
           </div>
 
           {/* Biomarkers Detail */}
-          <h2 className="text-xl font-semibold mt-4">Biomarker Analysis</h2>
+          <h2 className="text-xl font-semibold mt-4">{t("users.dashboard.biomarkers.title")}</h2>
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
              {/* HbA1c Card */}
              {analysis?.hba1c && (
@@ -150,7 +154,7 @@ export default function Dashboard({ loaderData }: Route.ComponentProps) {
                   <CardContent>
                      <div className="text-2xl font-bold">{(latestCheckup.raw_data as any).glucose.hba1c}%</div>
                      <p className="text-xs text-muted-foreground mt-1">
-                        Strict Target: &lt; {analysis.hba1c.target}%
+                        {t("users.dashboard.biomarkers.strict_target", { value: analysis.hba1c.target })}%
                      </p>
                   </CardContent>
                 </Card>
@@ -170,7 +174,7 @@ export default function Dashboard({ loaderData }: Route.ComponentProps) {
                   <CardContent>
                      <div className="text-2xl font-bold">{(latestCheckup.raw_data as any).lipids.ldl} mg/dL</div>
                      <p className="text-xs text-muted-foreground mt-1">
-                        Strict Target: &lt; {analysis.ldl.target} mg/dL
+                        {t("users.dashboard.biomarkers.strict_target", { value: analysis.ldl.target })} mg/dL
                      </p>
                   </CardContent>
                 </Card>
@@ -190,7 +194,7 @@ export default function Dashboard({ loaderData }: Route.ComponentProps) {
                   <CardContent>
                      <div className="text-2xl font-bold">{(latestCheckup.raw_data as any).inflammation.hsCrp} mg/L</div>
                      <p className="text-xs text-muted-foreground mt-1">
-                        Strict Target: &lt; {analysis.hsCrp.target} mg/L
+                        {t("users.dashboard.biomarkers.strict_target", { value: analysis.hsCrp.target })} mg/L
                      </p>
                   </CardContent>
                 </Card>
@@ -198,7 +202,7 @@ export default function Dashboard({ loaderData }: Route.ComponentProps) {
           </div>
 
           {/* Recommendations Section */}
-          <h2 className="text-xl font-semibold mt-8 mb-4">Recommended Protocols (Huberman Lab)</h2>
+          <h2 className="text-xl font-semibold mt-8 mb-4">{t("users.dashboard.protocols.title")}</h2>
           
           {(user as any).subscription_status === 'premium' ? (
               recommendations.length > 0 ? (
@@ -223,7 +227,7 @@ export default function Dashboard({ loaderData }: Route.ComponentProps) {
                   ))}
                 </div>
               ) : (
-                <p className="text-muted-foreground">Great work! Your mock health metrics are optimal, so no specific protocols are recommended yet.</p>
+                <p className="text-muted-foreground">{t("users.dashboard.protocols.no_protocols")}</p>
               )
           ) : (
               <Card className="bg-muted/10 border-dashed relative overflow-hidden">
@@ -232,12 +236,12 @@ export default function Dashboard({ loaderData }: Route.ComponentProps) {
                            <ShieldCheck className="h-6 w-6" />
                        </div>
                        <div>
-                           <h3 className="text-lg font-semibold">Premium Content Locked</h3>
+                           <h3 className="text-lg font-semibold">{t("users.dashboard.protocols.premium_locked.title")}</h3>
                            <p className="text-muted-foreground max-w-sm mx-auto mb-4">
-                               Unlock Andrew Huberman's scientific protocols tailored to your biomarkers.
+                               {t("users.dashboard.protocols.premium_locked.description")}
                            </p>
                            <Button asChild size="lg">
-                               <a href="/dashboard/upgrade">Unlock Premium for $9.99</a>
+                               <a href="/dashboard/upgrade">{t("users.dashboard.protocols.premium_locked.action")}</a>
                            </Button>
                        </div>
                   </div>

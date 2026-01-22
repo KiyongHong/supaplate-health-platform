@@ -5,8 +5,12 @@ import { Button } from "~/core/components/ui/button";
 import { Badge } from "~/core/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "~/core/components/ui/card";
 import { PROTOCOLS, type Protocol } from "../lib/huberman-protocols";
+import { useTranslation } from "react-i18next";
+import i18next from "~/core/lib/i18next.server";
+import { type MetaFunction } from "react-router";
 
-export async function loader({ params }: LoaderFunctionArgs) {
+export async function loader({ params, request }: LoaderFunctionArgs) {
+  const t = await i18next.getFixedT(request);
   const protocolId = params.id as string;
   const protocol = PROTOCOLS[protocolId];
   const isPremium = false; // Mock premium status
@@ -15,17 +19,26 @@ export async function loader({ params }: LoaderFunctionArgs) {
     throw new Response("Protocol Not Found", { status: 404 });
   }
 
-  return { protocol, isPremium };
+  return { protocol, isPremium, title: protocol.title };
+}
+
+export const meta: MetaFunction<typeof loader> = ({ data }) => {
+  return [
+    {
+      title: `${data?.title ?? "Protocol"} | ${import.meta.env.VITE_APP_NAME}`,
+    },
+  ];
 }
 
 export default function ProtocolDetail() {
   const { protocol, isPremium } = useLoaderData<typeof loader>();
+  const { t } = useTranslation();
 
   return (
     <div className="container max-w-4xl py-12 mx-auto px-4">
       <div className="mb-8">
         <Button variant="ghost" size="sm" asChild className="mb-4">
-            <Link to="/dashboard/health"><ArrowLeft className="mr-2 w-4 h-4"/> Back to Dashboard</Link>
+            <Link to="/dashboard/health"><ArrowLeft className="mr-2 w-4 h-4"/> {t("health.protocol.back_button")}</Link>
         </Button>
         <div className="flex items-center gap-3 mb-4">
              <Badge variant="secondary" className="text-sm py-1 px-3 bg-primary/10 text-primary hover:bg-primary/20">{protocol.category}</Badge>
@@ -43,7 +56,7 @@ export default function ProtocolDetail() {
         <div className="md:col-span-2 space-y-8">
             <section>
                 <h2 className="text-2xl font-bold mb-4 flex items-center gap-2">
-                    <BookOpen className="w-6 h-6 text-primary" /> Implementation Guide
+                    <BookOpen className="w-6 h-6 text-primary" /> {t("health.protocol.implementation_guide.title")}
                 </h2>
                 <div className="bg-card border rounded-xl p-6 shadow-sm space-y-6">
                     {protocol.actionItems.map((step, i) => (
@@ -52,7 +65,7 @@ export default function ProtocolDetail() {
                                 {i + 1}
                              </div>
                              <div>
-                                 <h3 className="font-semibold mb-1">Step {i + 1}</h3>
+                                 <h3 className="font-semibold mb-1">{t("health.protocol.implementation_guide.step_prefix")} {i + 1}</h3>
                                  <p className="text-muted-foreground">{step}</p>
                              </div>
                         </div>
@@ -61,12 +74,11 @@ export default function ProtocolDetail() {
             </section>
 
              <section>
-                <h2 className="text-2xl font-bold mb-4">Scientific Basis</h2>
+                <h2 className="text-2xl font-bold mb-4">{t("health.protocol.scientific_basis.title")}</h2>
                 <div className="bg-muted/30 p-6 rounded-xl border">
                     <p className="leading-relaxed text-muted-foreground">
                         {/* Mock scientific basis if not in data object */}
-                        This protocol is based on mechanism of action studies showing significant improvement in biomarkers. 
-                        Dr. Huberman emphasizes this implementation for its high efficacy-to-effort ratio.
+                        {t("health.protocol.scientific_basis.default_text")}
                     </p>
                 </div>
             </section>
@@ -75,7 +87,7 @@ export default function ProtocolDetail() {
         <div className="space-y-6">
             <Card>
                 <CardHeader>
-                    <CardTitle className="text-lg">Source Material</CardTitle>
+                    <CardTitle className="text-lg">{t("health.protocol.source.title")}</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
                     <div className="aspect-video bg-muted rounded-md flex items-center justify-center relative group cursor-pointer overflow-hidden text-center">
@@ -85,11 +97,11 @@ export default function ProtocolDetail() {
                     </div>
                     <div>
                         <p className="font-medium text-sm mb-1">{protocol.source}</p>
-                        <p className="text-xs text-muted-foreground">Huberman Lab Podcast</p>
+                        <p className="text-xs text-muted-foreground">{t("health.protocol.source.podcast")}</p>
                     </div>
                     <Button variant="outline" className="w-full gap-2" asChild>
                         <a href="#" target="_blank" rel="noopener noreferrer">
-                            Listen to Episode <ExternalLink className="w-3 h-3" />
+                            {t("health.protocol.source.listen_button")} <ExternalLink className="w-3 h-3" />
                         </a>
                     </Button>
                 </CardContent>
@@ -97,7 +109,7 @@ export default function ProtocolDetail() {
 
              <Card className="bg-primary/5 border-primary/20">
                 <CardHeader>
-                    <CardTitle className="text-lg text-primary">Biomarkers Targeted</CardTitle>
+                    <CardTitle className="text-lg text-primary">{t("health.protocol.biomarkers.title")}</CardTitle>
                 </CardHeader>
                 <CardContent>
                     <div className="flex flex-wrap gap-2">

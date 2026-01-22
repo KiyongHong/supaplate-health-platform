@@ -22,8 +22,8 @@ import { RemixI18Next } from "remix-i18next/server";
 // Import the base i18n configuration
 import i18n from "~/i18n";
 // Import translation resources for each supported language
+// Import translation resources for each supported language
 import en from "~/locales/en";
-import es from "~/locales/es";
 import ko from "~/locales/ko";
 
 /**
@@ -70,10 +70,6 @@ const i18next = new RemixI18Next({
       // English translations
       en: {
         common: en,
-      },
-      // Spanish translations
-      es: {
-        common: es,
       },
       // Korean translations
       ko: {

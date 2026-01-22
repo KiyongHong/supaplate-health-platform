@@ -15,6 +15,7 @@ import type { Route } from "./+types/start";
 
 import { data, redirect } from "react-router";
 import { z } from "zod";
+import i18next from "~/core/lib/i18next.server";
 
 import makeServerClient from "~/core/lib/supa-client.server";
 
@@ -45,7 +46,8 @@ export async function loader({ params, request }: Route.LoaderArgs) {
   // Validate the provider parameter
   const { error, success, data: parsedParams } = paramsSchema.safeParse(params);
   if (!success) {
-    return data({ error: "Invalid provider" }, { status: 400 });
+    const t = await i18next.getFixedT(request);
+    return data({ error: t("auth.social.errors.invalid_provider") }, { status: 400 });
   }
 
   // Create Supabase client and get response headers for auth cookies

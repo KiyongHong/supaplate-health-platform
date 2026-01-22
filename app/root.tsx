@@ -33,17 +33,11 @@ import {
   useSearchParams,
 } from "react-router";
 import { useChangeLanguage } from "remix-i18next/react";
-import {
-  PreventFlashOnWrongTheme,
-  ThemeProvider,
-  useTheme,
-} from "remix-themes";
 import { Toaster } from "sonner";
 
 import { Dialog } from "./core/components/ui/dialog";
 import { Sheet } from "./core/components/ui/sheet";
 import i18next from "./core/lib/i18next.server";
-import { themeSessionResolver } from "./core/lib/theme-session.server";
 import { cn } from "./core/lib/utils";
 import NotFound from "./core/screens/404";
 
@@ -92,14 +86,10 @@ export async function loader({ request }: Route.LoaderArgs) {
     throw new Error("Missing Supabase environment variables");
   }
 
-  // Concurrently load theme and locale preferences for better performance
-  const [{ getTheme }, locale] = await Promise.all([
-    themeSessionResolver(request),
-    i18next.getLocale(request),
-  ]);
+  // Load locale preference
+  const locale = await i18next.getLocale(request);
 
   return {
-    theme: getTheme(),
     locale,
   };
 }
@@ -122,15 +112,8 @@ export const handle = {
  * @param children - Child components to render within the layout
  */
 export function Layout({ children }: { children: React.ReactNode }) {
-  const data = useRouteLoaderData("root");
-  return (
-    <ThemeProvider
-      specifiedTheme={data?.theme ?? "dark"} // Default to dark theme if none is specified
-      themeAction="/api/settings/theme" // API endpoint for changing theme
-    >
-      <InnerLayout>{children}</InnerLayout>
-    </ThemeProvider>
-  );
+  // The ThemeProvider has been removed to rely on system preference.
+  return <InnerLayout>{children}</InnerLayout>;
 }
 
 /**
@@ -145,7 +128,6 @@ export function Layout({ children }: { children: React.ReactNode }) {
  * @param children - Child components to render within the layout
  */
 function InnerLayout({ children }: { children: React.ReactNode }) {
-  const [theme] = useTheme();
   const data = useRouteLoaderData<typeof loader>("root");
   const { i18n } = useTranslation();
   const { pathname } = useLocation();
@@ -159,9 +141,9 @@ function InnerLayout({ children }: { children: React.ReactNode }) {
     pathname.includes("/legal") || pathname.includes("/blog");
 
   return (
-    <html
+      <html
       lang={data?.locale ?? "en"}
-      className={cn(theme ?? "", "h-full")}
+      className="h-full"
       dir={i18n.dir()}
     >
       <head>
@@ -169,11 +151,7 @@ function InnerLayout({ children }: { children: React.ReactNode }) {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <Meta />
         <Links />
-        {isPreRendered ? (
-          <script src="/scripts/prerendered-theme.js" />
-        ) : (
-          <PreventFlashOnWrongTheme ssrTheme={Boolean(data?.theme)} />
-        )}
+        {isPreRendered && <script src="/scripts/prerendered-theme.js" />}
       </head>
       <body className="h-full">
         {children}

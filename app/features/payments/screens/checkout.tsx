@@ -26,6 +26,9 @@ import { Button } from "~/core/components/ui/button";
 import { requireAuthentication } from "~/core/lib/guards.server";
 import makeServerClient from "~/core/lib/supa-client.server";
 import { cn } from "~/core/lib/utils";
+import { useTranslation } from "react-i18next";
+import i18next from "~/core/lib/i18next.server";
+import { type MetaFunction } from "react-router";
 
 /**
  * Meta function for setting page metadata
@@ -36,9 +39,9 @@ import { cn } from "~/core/lib/utils";
  *
  * @returns Array of metadata objects for the page
  */
-export const meta: Route.MetaFunction = () => {
+export const meta: MetaFunction<typeof loader> = ({ data }) => {
   return [
-    { title: `Checkout | ${import.meta.env.VITE_APP_NAME}` },
+    { title: `${data?.title} | ${import.meta.env.VITE_APP_NAME}` },
     {
       name: "color-scheme", // We have to do this because the Toss iframe looks bad in dark mode.
       content: "light",
@@ -80,6 +83,7 @@ export async function loader({ request }: Route.LoaderArgs) {
     userId: user!.id,
     userName: user!.user_metadata.name,
     userEmail: user!.email,
+    title: (await i18next.getFixedT(request))("payments.checkout.title"),
   };
 }
 
@@ -94,6 +98,8 @@ export async function loader({ request }: Route.LoaderArgs) {
  * @returns JSX element representing the checkout page
  */
 export default function Checkout({ loaderData }: Route.ComponentProps) {
+  const { t } = useTranslation();
+  // References to track Toss Payments widgets and initialization status
   // References to track Toss Payments widgets and initialization status
   const widgets = useRef<TossPaymentsWidgets | null>(null);
   const initedToss = useRef<boolean>(false);
@@ -236,14 +242,12 @@ export default function Checkout({ loaderData }: Route.ComponentProps) {
         <div className="flex flex-col items-start gap-10">
           {/* Product title */}
           <h1 className="text-center text-4xl font-semibold tracking-tight lg:text-5xl">
-            Beagle NFT
+            {t("payments.checkout.title")}
           </h1>
 
           {/* Demo information */}
           <p className="text-muted-foreground text-lg font-medium">
-            This is a page to demo the Toss Payments integration.
-            <br />
-            You aren't actually buying anything.
+            {t("payments.checkout.demo_notice")}
           </p>
 
           {/* Loading indicator while payment widgets initialize */}
@@ -251,7 +255,7 @@ export default function Checkout({ loaderData }: Route.ComponentProps) {
             <div className="flex w-full flex-col items-center justify-center gap-2">
               <Loader2Icon className="text-muted-foreground size-10 animate-spin" />
               <span className="text-muted-foreground text-lg">
-                결제 수단을 불러오는 중...
+                 {t("payments.checkout.loading")}
               </span>
             </div>
           ) : null}
@@ -286,7 +290,7 @@ export default function Checkout({ loaderData }: Route.ComponentProps) {
                 onClick={handleClick}
                 disabled={!agreementStatus}
               >
-                Buy for 10,000원
+                {t("payments.checkout.button")}
               </Button>
             ) : null}
           </div>

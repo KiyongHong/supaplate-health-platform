@@ -15,6 +15,8 @@ import type { Route } from "./+types/magic-link";
 import { useEffect, useRef } from "react";
 import { Form, data } from "react-router";
 import { z } from "zod";
+import { useTranslation } from "react-i18next";
+import i18next from "~/core/lib/i18next.server";
 
 import FormButton from "~/core/components/form-button";
 import FormErrors from "~/core/components/form-error";
@@ -35,13 +37,20 @@ import makeServerClient from "~/core/lib/supa-client.server";
  *
  * Sets the page title using the application name from environment variables
  */
-export const meta: Route.MetaFunction = () => {
+export const meta: Route.MetaFunction = ({ data }) => {
   return [
     {
-      title: `Magic Link | ${import.meta.env.VITE_APP_NAME}`,
+      title: `${data?.title ?? "Magic Link"} | ${import.meta.env.VITE_APP_NAME}`,
     },
   ];
 };
+
+export async function loader({ request }: Route.LoaderArgs) {
+  const t = await i18next.getFixedT(request);
+  return {
+    title: t("auth.magic_link.title"),
+  };
+}
 
 /**
  * Form validation schema for magic link authentication
@@ -98,8 +107,9 @@ export async function action({ request }: Route.ActionArgs) {
   if (error) {
     // Handle case where user doesn't exist
     if (error.code === "otp_disabled") {
+      const t = await i18next.getFixedT(request);
       return data(
-        { error: "Create an account before signing in." },
+        { error: t("auth.magic_link.errors.create_account_first") },
         { status: 400 },
       );
     }
@@ -126,6 +136,7 @@ export async function action({ request }: Route.ActionArgs) {
  * @param actionData - Data returned from the form action, including errors or success status
  */
 export default function MagicLink({ actionData }: Route.ComponentProps) {
+  const { t } = useTranslation();
   // Reference to the form element for resetting after successful submission
   const formRef = useRef<HTMLFormElement>(null);
   
@@ -141,10 +152,10 @@ export default function MagicLink({ actionData }: Route.ComponentProps) {
       <Card className="w-full max-w-md">
         <CardHeader className="flex flex-col items-center">
           <CardTitle className="text-2xl font-semibold">
-            Enter your email
+            {t("auth.magic_link.header.title")}
           </CardTitle>
           <CardDescription className="text-center text-base">
-            We&apos;ll send you a verification code.
+            {t("auth.magic_link.header.description")}
           </CardDescription>
         </CardHeader>
         <CardContent className="grid gap-4">
@@ -155,22 +166,22 @@ export default function MagicLink({ actionData }: Route.ComponentProps) {
           >
             <div className="flex flex-col items-start space-y-2">
               <Label htmlFor="name" className="flex flex-col items-start gap-1">
-                Email
+                {t("auth.magic_link.email.label")}
               </Label>
               <Input
                 id="email"
                 name="email"
                 required
                 type="email"
-                placeholder="nico@supaplate.com"
+                placeholder={t("auth.magic_link.email.placeholder")}
               />
             </div>
-            <FormButton label="Send magic link" className="w-full" />
+            <FormButton label={t("auth.magic_link.action")} className="w-full" />
             {actionData && "error" in actionData && actionData.error ? (
               <FormErrors errors={[actionData.error]} />
             ) : null}
             {actionData && "success" in actionData && actionData.success ? (
-              <FormSuccess message="Check your email and click the magic link to continue. You can close this tab." />
+              <FormSuccess message={t("auth.magic_link.success")} />
             ) : null}
           </Form>
         </CardContent>

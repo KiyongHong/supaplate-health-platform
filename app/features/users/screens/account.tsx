@@ -1,7 +1,8 @@
 import type { Route } from "./+types/account";
-
 import { Suspense } from "react";
 import { Await } from "react-router";
+import { useTranslation } from "react-i18next";
+import i18next from "~/core/lib/i18next.server";
 
 import makeServerClient from "~/core/lib/supa-client.server";
 
@@ -12,8 +13,8 @@ import DeleteAccountForm from "../components/forms/delete-account-form";
 import EditProfileForm from "../components/forms/edit-profile-form";
 import { getUserProfile } from "../queries.server";
 
-export const meta: Route.MetaFunction = () => {
-  return [{ title: `Account | ${import.meta.env.VITE_APP_NAME}` }];
+export const meta: Route.MetaFunction = ({ data }) => {
+  return [{ title: data?.title ?? `Account | ${import.meta.env.VITE_APP_NAME}` }];
 };
 
 export async function loader({ request }: Route.LoaderArgs) {
@@ -23,14 +24,17 @@ export async function loader({ request }: Route.LoaderArgs) {
   } = await client.auth.getUser();
   const identities = client.auth.getUserIdentities();
   const profile = await getUserProfile(user!.id);
+  const t = await i18next.getFixedT(request);
   return {
     user,
     identities,
     profile,
+    title: t("users.account.title"),
   };
 }
 
 export default function Account({ loaderData }: Route.ComponentProps) {
+  const { t } = useTranslation();
   const { user, identities, profile } = loaderData;
   const hasEmailIdentity = user?.identities?.some(
     (identity) => identity.provider === "email",
@@ -45,7 +49,7 @@ export default function Account({ loaderData }: Route.ComponentProps) {
         <Await
           resolve={profile}
           errorElement={
-            <div className="text-red-500">Could not load profile</div>
+            <div className="text-red-500">{t("users.account.errors.load_profile")}</div>
           }
         >
           {(profile) => {
@@ -72,14 +76,14 @@ export default function Account({ loaderData }: Route.ComponentProps) {
         <Await
           resolve={identities}
           errorElement={
-            <div className="text-red-500">Could not load social accounts</div>
+            <div className="text-red-500">{t("users.account.errors.load_social")}</div>
           }
         >
           {({ data, error }) => {
             if (!data) {
               return (
                 <div className="text-red-500">
-                  <span>Could not load social accounts</span>
+                  <span>{t("users.account.errors.load_social")}</span>
                   <span className="text-xs">Code: {error.code}</span>
                   <span className="text-xs">Message: {error.message}</span>
                 </div>

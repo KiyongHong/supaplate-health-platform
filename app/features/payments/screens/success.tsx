@@ -22,6 +22,9 @@ import { z } from "zod";
 import { requireAuthentication } from "~/core/lib/guards.server";
 import adminClient from "~/core/lib/supa-admin-client.server";
 import makeServerClient from "~/core/lib/supa-client.server";
+import { useTranslation } from "react-i18next";
+import i18next from "~/core/lib/i18next.server";
+import { type MetaFunction } from "react-router";
 
 /**
  * Meta function for setting page metadata
@@ -31,9 +34,9 @@ import makeServerClient from "~/core/lib/supa-client.server";
  *
  * @returns Array of metadata objects for the page
  */
-export const meta: Route.MetaFunction = () => [
+export const meta: MetaFunction<typeof loader> = ({ data }) => [
   {
-    title: `Payment Complete | ${import.meta.env.VITE_APP_NAME}`,
+    title: `${data?.title} | ${import.meta.env.VITE_APP_NAME}`,
   },
 ];
 
@@ -190,7 +193,10 @@ export async function loader({ request }: Route.LoaderArgs) {
   });
   
   // Return payment data for the success page
-  return { data };
+  return {
+    data,
+    title: (await i18next.getFixedT(request))("payments.success.title"),
+  };
 }
 
 /**
@@ -209,6 +215,7 @@ export async function loader({ request }: Route.LoaderArgs) {
  * @returns JSX element representing the payment success page
  */
 export default function Success({ loaderData }: Route.ComponentProps) {
+  const { t } = useTranslation();
   return (
     <div className="flex flex-col items-center gap-20">
       {/* Main content grid - single column on mobile, two columns on desktop */}
@@ -226,15 +233,12 @@ export default function Success({ loaderData }: Route.ComponentProps) {
         <div className="flex flex-col items-start gap-10 overflow-x-scroll">
           {/* Success message */}
           <h1 className="text-center text-4xl font-semibold tracking-tight lg:text-5xl">
-            Payment Complete
+            {t("payments.success.title")}
           </h1>
           
           {/* Explanation text */}
           <p className="text-muted-foreground text-lg font-medium">
-            We have verified the payment with the Toss API.
-            <br />
-            <br />
-            Here is the data we got from Toss.
+            {t("payments.success.message")}
           </p>
           
           {/* Raw payment data (for demonstration purposes) */}

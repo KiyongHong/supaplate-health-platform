@@ -12,7 +12,13 @@
  * - Sets appropriate page metadata for error state
  */
 
-import { type MetaFunction, useSearchParams } from "react-router";
+import { type MetaFunction, useSearchParams, type LoaderFunctionArgs } from "react-router";
+import { useTranslation } from "react-i18next";
+import i18next from "~/core/lib/i18next.server";
+
+export async function loader({ request }: LoaderFunctionArgs) {
+  return { title: (await i18next.getFixedT(request))("payments.failure.title") };
+}
 
 /**
  * Meta function for setting page metadata
@@ -22,8 +28,8 @@ import { type MetaFunction, useSearchParams } from "react-router";
  *
  * @returns Array of metadata objects for the page
  */
-export const meta: MetaFunction = () => {
-  return [{ title: `Payment Error | ${import.meta.env.VITE_APP_NAME}` }];
+export const meta: MetaFunction<typeof loader> = ({ data }) => {
+  return [{ title: `${data?.title} | ${import.meta.env.VITE_APP_NAME}` }];
 };
 
 /**
@@ -44,6 +50,7 @@ export const meta: MetaFunction = () => {
  * @returns JSX element representing the payment failure page
  */
 export default function Failure() {
+  const { t } = useTranslation();
   // Extract error details from URL parameters
   const [searchParams] = useSearchParams();
   const errorCode = searchParams.get("code");
@@ -53,12 +60,12 @@ export default function Failure() {
     <div className="flex flex-col items-center justify-center gap-2">
       {/* Error heading with distinct error styling */}
       <h1 className="text-center text-3xl font-semibold tracking-tight text-red-500 md:text-5xl dark:text-red-400">
-        Payment VerificationError
+        {t("payments.failure.title")}
       </h1>
       
       {/* Error code display */}
       <p className="text-muted-foreground text-center">
-        Error code: {errorCode}
+        {t("payments.failure.error_code", { code: errorCode })}
       </p>
       
       {/* Error description display */}

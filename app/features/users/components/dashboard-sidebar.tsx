@@ -33,129 +33,7 @@ import SidebarProjects from "./sidebar-projects";
 import TeamSwitcher from "./sidebar-team-switcher";
 import SidebarUser from "./sidebar-user";
 
-const data = {
-  teams: [
-    {
-      name: "SalesForge",
-      logo: BuildingIcon,
-      plan: "Enterprise",
-    },
-    {
-      name: "TechCo Solutions",
-      logo: BriefcaseIcon,
-      plan: "Startup",
-    },
-    {
-      name: "GrowthMate",
-      logo: RocketIcon,
-      plan: "Free",
-    },
-  ],
-  navMain: [
-    {
-      title: "Dashboard",
-      url: "#",
-      icon: LayoutDashboardIcon,
-      isActive: true,
-      items: [
-        {
-          title: "Overview",
-          url: "/dashboard",
-        },
-        {
-          title: "Health Checkup",
-          url: "/dashboard/health",
-        },
-        {
-          title: "Analytics",
-          url: "#",
-        },
-        {
-          title: "Reports",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Customers",
-      url: "#",
-      icon: UsersIcon,
-      items: [
-        {
-          title: "Contacts",
-          url: "#",
-        },
-        {
-          title: "Companies",
-          url: "#",
-        },
-        {
-          title: "Deals",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Sales",
-      url: "#",
-      icon: LineChartIcon,
-      items: [
-        {
-          title: "Pipeline",
-          url: "#",
-        },
-        {
-          title: "Opportunities",
-          url: "#",
-        },
-        {
-          title: "Quotes",
-          url: "#",
-        },
-        {
-          title: "Invoices",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Settings",
-      url: "#",
-      icon: Settings2Icon,
-      items: [
-        {
-          title: "Workspace",
-          url: "#",
-        },
-        {
-          title: "Team",
-          url: "#",
-        },
-        {
-          title: "Integrations",
-          url: "#",
-        },
-      ],
-    },
-  ],
-  projects: [
-    {
-      name: "Sales Team",
-      url: "#",
-      icon: Target,
-    },
-    {
-      name: "Customer Success",
-      url: "#",
-      icon: HeartHandshakeIcon,
-    },
-    {
-      name: "Marketing",
-      url: "#",
-      icon: MegaphoneIcon,
-    },
-  ],
-};
+import { useTranslation } from "react-i18next";
 
 export default function DashboardSidebar({
   user,
@@ -167,6 +45,131 @@ export default function DashboardSidebar({
     avatarUrl: string;
   };
 }) {
+  const { t } = useTranslation();
+  
+  const data = {
+    teams: [
+      {
+        name: t("users.sidebar.teams.sales_forge"),
+        logo: BuildingIcon,
+        plan: "Enterprise",
+      },
+      {
+        name: t("users.sidebar.teams.techco"),
+        logo: BriefcaseIcon,
+        plan: "Startup",
+      },
+      {
+        name: t("users.sidebar.teams.growth_mate"),
+        logo: RocketIcon,
+        plan: "Free",
+      },
+    ],
+    navMain: [
+      {
+        title: t("users.sidebar.nav.dashboard"),
+        url: "#",
+        icon: LayoutDashboardIcon,
+        isActive: true,
+        items: [
+          {
+            title: t("users.sidebar.nav.overview"),
+            url: "/dashboard",
+          },
+          {
+            title: t("users.sidebar.nav.health_checkup"),
+            url: "/dashboard/health",
+          },
+          {
+            title: t("users.sidebar.nav.analytics"),
+            url: "#",
+          },
+          {
+            title: t("users.sidebar.nav.reports"),
+            url: "#",
+          },
+        ],
+      },
+      {
+        title: t("users.sidebar.nav.customers"),
+        url: "#",
+        icon: UsersIcon,
+        items: [
+          {
+            title: t("users.sidebar.nav.contacts"),
+            url: "#",
+          },
+          {
+            title: t("users.sidebar.nav.companies"),
+            url: "#",
+          },
+          {
+            title: t("users.sidebar.nav.deals"),
+            url: "#",
+          },
+        ],
+      },
+      {
+        title: t("users.sidebar.nav.sales"),
+        url: "#",
+        icon: LineChartIcon,
+        items: [
+          {
+            title: t("users.sidebar.nav.pipeline"),
+            url: "#",
+          },
+          {
+            title: t("users.sidebar.nav.opportunities"),
+            url: "#",
+          },
+          {
+            title: t("users.sidebar.nav.quotes"),
+            url: "#",
+          },
+          {
+            title: t("users.sidebar.nav.invoices"),
+            url: "#",
+          },
+        ],
+      },
+      {
+        title: t("users.sidebar.nav.settings"),
+        url: "#",
+        icon: Settings2Icon,
+        items: [
+          {
+            title: t("users.sidebar.nav.workspace"),
+            url: "#",
+          },
+          {
+            title: t("users.sidebar.nav.team"),
+            url: "#",
+          },
+          {
+            title: t("users.sidebar.nav.integrations"),
+            url: "#",
+          },
+        ],
+      },
+    ],
+    projects: [
+      {
+        name: t("users.sidebar.projects.sales_team"),
+        url: "#",
+        icon: Target,
+      },
+      {
+        name: t("users.sidebar.projects.customer_success"),
+        url: "#",
+        icon: HeartHandshakeIcon,
+      },
+      {
+        name: t("users.sidebar.projects.marketing"),
+        url: "#",
+        icon: MegaphoneIcon,
+      },
+    ],
+  };
   return (
     <Sidebar collapsible="icon" variant="inset" {...props}>
       <SidebarHeader>
