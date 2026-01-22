@@ -1,95 +1,119 @@
 
 import "dotenv/config";
-import db from "~/core/db/drizzle-client.server";
-import { hubermanProtocols } from "~/features/health/schema";
+import { drizzle } from "drizzle-orm/postgres-js";
+import postgres from "postgres";
+
+// We need to import the table schema. 
+// Using relative path assuming this script is in root/scripts/ and schema is in app/features/protocols
+// Check your file structure. Based on earlier view: app/features/health/schema.ts exports hubermanProtocols
+// Correction: The schema for hubermanProtocols was defined in app/features/health/schema.ts
+import { hubermanProtocols } from "../app/features/health/schema";
+
+// DB Connection
+const connectionString = process.env.DATABASE_URL;
+
+if (!connectionString) {
+  throw new Error("DATABASE_URL is not set");
+}
+
+const client = postgres(connectionString);
+const db = drizzle(client);
 
 const protocols = [
   {
-    title: "Zone 2 Cardio Training",
-    category: "Exercise",
-    related_biomarkers: ["ldl", "hba1c", "triglycerides", "bpSystolic", "bpDiastolic"],
-    description: "Low intensity steady state cardio to improve mitochondrial health and metabolic function.",
-    scientific_basis: "Improves insulin sensitivity and lipid clearance. Peter Attia recommends 3-4 hours per week.",
-    implementation_steps: [
-      "Keep heart rate at 180 - age",
-      "Can hold a conversation but difficult",
-      "Do 45-60 min sessions",
-      "Aim for 3-4x per week"
-    ],
-    source_episode: "The Science of Fitness & Exercise",
-  },
-  {
     title: "Morning Sunlight Viewing",
-    category: "Sleep",
-    related_biomarkers: ["cortisol", "sleep_quality"],
-    description: "View sunlight within 30-60 minutes of waking to anchor circadian rhythm.",
-    scientific_basis: "Sets the circadian clock, boosts early day cortisol, and triggers timed melatonin release for sleep.",
-    implementation_steps: [
-      "Go outside within 1 hour of waking",
-      "View sunlight for 10-30 mins (never look directly at sun)",
-      "Do not wear sunglasses (eyeglasses are ok)",
-      "If dark, turn on bright overhead lights"
-    ],
-    source_episode: "Master Your Sleep",
+    category: "sleep",
+    related_biomarkers: ["cortisol", "melatonin", "sleep_quality"],
+    description: "View sunlight within 30-60 minutes of waking up to set your circadian rhythm using retinal ganglion cells.",
+    scientific_basis: "Huberman Lab Episode 2: Master Your Sleep. Sunlight triggers cortisol pulse which sets the rhythm for melatonin release 12-14 hours later.",
+    implementation_steps: {
+        steps: [
+            "Go outside within 30-60 mins of waking.",
+            "View sunlight for 5-10 mins on sunny days, 20-30 mins on cloudy days.",
+            "Do not wear sunglasses (eyeglasses/contacts are fine).",
+            "Do not look directly at the sun if it hurts."
+        ]
+    },
+    source_episode: "Master Your Sleep & Be More Alert When Awake",
   },
   {
-    title: "NSDR (Non-Sleep Deep Rest)",
-    category: "Stress/Recovery",
-    related_biomarkers: ["hscrp", "cortisol", "bpSystolic"],
-    description: "A protocol to restore energy and focus, similar to Yoga Nidra.",
-    scientific_basis: "Accelerates neuroplasticity and recovery. Reduces stress hormones.",
-    implementation_steps: [
-      "Find a quiet place to lie down",
-      "Listen to an NSDR script (10-20 mins)",
-      "Focus on breathing and body scanning",
-      "Use when tired or after intense learning"
-    ],
-    source_episode: "Tools for Managing Stress & Anxiety",
+    title: "Non-Sleep Deep Rest (NSDR)",
+    category: "stress_management",
+    related_biomarkers: ["cortisol", "hrv", "stress"],
+    description: "A deep relaxation technique to recover lost sleep and reduce stress in real-time.",
+    scientific_basis: "Huberman Lab: NSDR protocols replenish dopamine and reduce cortisol levels effectively.",
+    implementation_steps: {
+        steps: [
+            "Find a quiet place to lie down.",
+            "Listen to a 10-20 minute NSDR or Yoga Nidra script (e.g. on YouTube).",
+            "Focus on breathing and body scan."
+        ]
+    },
+    source_episode: "Sleep Toolkit: Tools for Optimizing Sleep & Sleep-Wake Timing",
   },
   {
-    title: "Magnesium Threonate Supplementation",
-    category: "Sleep/Cognition",
-    related_biomarkers: ["sleep_quality", "magnesium"],
-    description: "Specific form of magnesium that crosses the blood-brain barrier.",
-    scientific_basis: "Supports sleep onset and cognitive function.",
-    implementation_steps: [
-      "Take 145mg of Magnesium Threonate",
-      "30-60 minutes before sleep",
-      "Combine with Apigenin (50mg) and Theanine (100-200mg) for best results"
-    ],
-    source_episode: "Master Your Sleep",
+    title: "Zone 2 Cardio",
+    category: "exercise",
+    related_biomarkers: ["resting_heart_rate", "vo2_max", "mitochondrial_health"],
+    description: "Low intensity steady state cardio where you can hold a conversation but it requires effort.",
+    scientific_basis: "Effective for building mitochondrial base, improving insulin sensitivity and fat oxidation.",
+    implementation_steps: {
+        steps: [
+            "Perform 150-180 minutes per week.",
+            "Keep heart rate at 60-70% of max.",
+            "Can be brisk walking, jogging, cycling, or swimming."
+        ]
+    },
+    source_episode: "Dr. Peter Attia: Exercise, Nutrition, Hormones for Longevity",
   },
   {
-    title: "Strict Sugar Elimination",
-    category: "Nutrition",
-    related_biomarkers: ["hba1c", "glucose", "triglycerides", "ldl"],
-    description: "Eliminate added sugars and refined carbohydrates to lower insulin.",
-    scientific_basis: "Rapidly reduces liver fat and improves insulin sensitivity.",
-    implementation_steps: [
-      "Avoid all sweetened beverages",
-      "Check labels for added sugar",
-      "Focus on whole, unprocessed foods",
-      "Replace simple carbs with complex carbs or fats"
-    ],
-    source_episode: "Sugar & The Brain",
+      title: "Cold Exposure (Deliberate Cold Plunge)",
+      category: "metabolism",
+      related_biomarkers: ["dopamine", "norepinephrine", "inflammation"],
+      description: "Immersing body in cold water to spike dopamine and improve resilience.",
+      scientific_basis: "Increases dopamine by 2.5x for hours. Increases metabolic rate via brown fat activation.",
+      implementation_steps: {
+          steps: [
+              "Start with 1-3 minutes in cold water (10-15°C / 50-60°F).",
+              "Focus on controlling breathing (slow exhales).",
+              "Aim for 11 minutes total per week."
+          ]
+      },
+      source_episode: "Using Deliberate Cold Exposure for Health and Performance"
+  },
+  {
+      title: "Magnesium Threonate or Glycinate",
+      category: "supplements",
+      related_biomarkers: ["sleep_quality", "magnesium"],
+      description: "Supplementing specific forms of magnesium to aid sleep onset and depth.",
+      scientific_basis: "Magnesium Threonate crosses BBB effectively. Glycinate is muscle relaxing.",
+      implementation_steps: {
+         steps: [
+             "Take 145mg Magnesium Threonate or 200mg Bisglycinate.",
+             "Consume 30-60 minutes before sleep.",
+             "Avoid if it causes digestive issues."
+         ]
+      },
+      source_episode: "Master Your Sleep & Be More Alert When Awake"
   }
 ];
 
-async function seed() {
+async function main() {
   console.log("🌱 Seeding Huberman Protocols...");
   
-  for (const protocol of protocols) {
-    await db.insert(hubermanProtocols).values({
-      ...protocol,
-      implementation_steps: protocol.implementation_steps,
-    });
+  try {
+      // Basic insert without vectors for now
+      // Note: embedding column is optional in schema definition if we didn't add notNull()
+      // Let's check schema: embedding: vector("embedding", { dimensions: 768 }) - usually nullable by default in drizzle unless .notNull() is called
+    for (const protocol of protocols) {
+      await db.insert(hubermanProtocols).values(protocol);
+    }
+    console.log("✅ Seeding complete!");
+  } catch (error) {
+    console.error("❌ Seeding failed:", error);
+  } finally {
+    await client.end();
   }
-
-  console.log("✅ Seeding Complete!");
-  process.exit(0);
 }
 
-seed().catch((err) => {
-  console.error("❌ Seeding Failed:", err);
-  process.exit(1);
-});
+main();
