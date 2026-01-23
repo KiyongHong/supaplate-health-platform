@@ -344,14 +344,14 @@ export default function ContactUs({ actionData }: Route.ComponentProps) {
         {/* Name field */}
         <div className="flex flex-col items-start space-y-2">
           <Label htmlFor="name" className="flex flex-col items-start gap-1">
-            {t("auth.join.form.name_label")}
+            {t("auth.register.name.label")}
           </Label>
           <Input
             id="name"
             name="name"
             required
             type="text"
-            placeholder={t("auth.join.form.name_placeholder")}
+            placeholder={t("auth.register.name.placeholder")}
           />
           {/* Display name field validation errors if any */}
           {actionData &&
@@ -371,7 +371,7 @@ export default function ContactUs({ actionData }: Route.ComponentProps) {
             name="email"
             required
             type="email"
-            placeholder={t("auth.login.form.email_placeholder")}
+            placeholder={t("auth.login.email.placeholder")}
           />
           {/* Display email field validation errors if any */}
           {actionData &&

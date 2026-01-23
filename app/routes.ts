@@ -39,6 +39,9 @@ export default [
         "/providers/:provider",
         "features/users/api/disconnect-provider.tsx",
       ),
+      // Toss Identity Verification
+      route("/toss/request", "features/users/api/toss-request.tsx"),
+      route("/toss/success", "features/users/api/toss-success.tsx"),
     ]),
     ...prefix("/cron", [route("/mailer", "features/cron/api/mailer.tsx")]),
     ...prefix("/blog", [route("/og", "features/blog/api/og.tsx")]),
@@ -109,7 +112,20 @@ export default [
   ]),
 
   ...prefix("/legal", [route("/:slug", "features/legal/screens/policy.tsx")]),
+  ...prefix("/admin", [
+    layout("features/admin/layouts/admin.layout.tsx", [
+      index("features/admin/screens/dashboard.tsx"),
+      route("posts", "features/admin/screens/posts-list.tsx"),
+      route("posts/:id", "features/admin/screens/post-editor.tsx"),
+    ]),
+  ]),
+
   layout("features/blog/layouts/blog.layout.tsx", [
+    ...prefix("/topics", [
+      index("features/blog/screens/topics.tsx"),
+      route("/:category", "features/blog/screens/category.tsx"),
+      route("/:category/:slug", "features/blog/screens/topic-post.tsx"),
+    ]),
     ...prefix("/blog", [
       index("features/blog/screens/posts.tsx"),
       route("/:slug", "features/blog/screens/post.tsx"),

@@ -4,12 +4,355 @@ const en: Translation = {
   auth: {
     login: {
       title: "Login",
-    }
+      header: {
+        title: "Welcome back",
+        description: "Enter your email to sign in to your account",
+      },
+      email: {
+        label: "Email",
+        placeholder: "m@example.com",
+      },
+      password: {
+        label: "Password",
+        placeholder: "Enter your password",
+      },
+      forgot_password: "Forgot your password?",
+      action: "Sign In",
+      no_account: "Don't have an account?",
+      sign_up: "Sign up",
+      errors: {
+        email_not_confirmed: "Email not confirmed",
+        before_verify: "You need to verify your email before you can sign in.",
+        resend_confirmation: "Resend confirmation email",
+      },
+    },
+    register: {
+      title: "Create an account",
+      header: {
+        title: "Create an account",
+        description: "Enter your information to create an account",
+      },
+      name: {
+        label: "Name",
+        placeholder: "John Doe",
+      },
+      email: {
+        label: "Email",
+        placeholder: "m@example.com",
+      },
+      password: {
+        label: "Password",
+        hint: "Must be at least 8 characters",
+        placeholder: "Enter your password",
+      },
+      confirm_password: {
+        label: "Confirm Password",
+        placeholder: "Confirm your password",
+      },
+      marketing: "I agree to receive marketing emails.",
+      terms: {
+        text: "I agree to the",
+        tos: "Terms of Service",
+        and: "and",
+        privacy: "Privacy Policy",
+      },
+      action: "Sign Up",
+      success: {
+        title: "Check your email",
+        description: "We've sent you a verification link to your email address.",
+      },
+      already_have_account: "Already have an account?",
+      sign_in: "Sign in",
+    },
+    forgot_password: {
+      title: "Forgot Password",
+      header: {
+        title: "Forgot Password",
+        description: "Enter your email address and we'll send you a link to reset your password",
+      },
+      email: {
+        label: "Email",
+        placeholder: "m@example.com",
+      },
+      action: "Send Reset Link",
+      success: "Check your email for a password reset link",
+    },
+    magic_link: {
+      title: "Magic Link",
+      header: {
+        title: "Magic Link Login",
+        description: "We'll send you a magic link to sign in without a password.",
+      },
+      email: {
+        label: "Email",
+        placeholder: "Enter your email",
+      },
+      action: "Send Magic Link",
+      success: "Check your email for the magic link.",
+      errors: {
+        create_account_first: "Please create an account first.",
+        invalid_email: "Please enter a valid email address.",
+      },
+    },
+    otp: {
+      start: {
+        title: "OTP Login",
+        header: {
+          title: "Sign in with OTP",
+          description: "We'll send you a one-time password to your email.",
+        },
+        email: {
+          label: "Email",
+          placeholder: "Enter your email",
+        },
+        action: "Send Code",
+      },
+      complete: {
+        title: "Verify OTP",
+        header: {
+          title: "Enter Code",
+          description: "Enter the 6-digit code sent to your email.",
+        },
+        action: "Verify",
+        errors: {
+          verify_failed: "Verification failed. Please try again.",
+        },
+      },
+    },
+    new_password: {
+      title: "Update Password",
+      header: {
+        title: "Update Password",
+        description: "Enter your new password below",
+      },
+      password: {
+        label: "New Password",
+        placeholder: "Enter your new password",
+      },
+      confirm_password: {
+        label: "Confirm Password",
+        placeholder: "Confirm your new password",
+      },
+      action: "Update Password",
+      success: "Your password has been updated successfully",
+    },
+    confirm: {
+      title: "Confirm",
+      errors: {
+        invalid_code: "Invalid or expired confirmation code",
+        failed: "Confirmation failed",
+      },
+      email_change_success: "Your email has been changed successfully",
+    },
+    email_verified: {
+      title: "Email Verification",
+      header: "Email Verification",
+    },
+    social: {
+      or: "OR",
+      continue_with: "Continue with {{provider}}",
+      errors: {
+        invalid_provider: "Invalid authentication provider.",
+        invalid_code: "Invalid authentication code.",
+        login_failed: "Login failed.",
+      },
+    },
   },
   users: {
     dashboard: {
       title: "Dashboard",
-    }
+      header: "Dashboard Overview",
+      welcome: "Welcome back, {{name}}!",
+      verify_identity_to_start: "Verify Identity to Start",
+      no_data: {
+        title: "No Health Data Available",
+        description: "You haven't completed a health checkup analysis yet. Verify your identity to import your health data.",
+        action: "Verify Identity",
+      },
+      health_score: {
+        title: "Health Score",
+        description: "Your overall health status based on strict standards.",
+      },
+      biomarkers: {
+        title: "Key Biomarkers",
+        strict_target: "Strict Target: < {{value}}",
+      },
+      protocols: {
+        title: "Recommended Protocols",
+        no_protocols: "No specific protocols recommended at this time based on your current data.",
+        premium_locked: {
+          title: "Premium Protocols Locked",
+          description: "Upgrade to Premium to unlock personalized health improvement protocols based on Huberman Lab science.",
+          action: "Unlock Protocols",
+        },
+      },
+    },
+    sidebar: {
+      teams: {
+        sales_forge: "Sales Forge",
+        techco: "TechCo",
+        growth_mate: "Growth Mate",
+      },
+      nav: {
+        dashboard: "Dashboard",
+        overview: "Overview",
+        health_checkup: "Health Checkup",
+        analytics: "Analytics",
+        reports: "Reports",
+        customers: "Customers",
+        contacts: "Contacts",
+        companies: "Companies",
+        deals: "Deals",
+        sales: "Sales",
+        pipeline: "Pipeline",
+        opportunities: "Opportunities",
+        quotes: "Quotes",
+        invoices: "Invoices",
+        settings: "Settings",
+        workspace: "Workspace",
+        team: "Team",
+        integrations: "Integrations",
+      },
+      projects: {
+        sales_team: "Sales Team",
+        customer_success: "Customer Success",
+        marketing: "Marketing",
+      },
+    },
+    verify_identity: {
+      title: "Verify Identity",
+      header: "Identity Verification",
+    },
+    components: {
+      identity_verification: {
+        title: "Identity Verification",
+        description: "Verify your identity to access health services.",
+        verified: {
+          title: "Verified",
+          description: "Your identity has been successfully verified.",
+        },
+        fields: {
+          name: {
+            label: "Name",
+            placeholder: "Enter your name",
+          },
+          birthday: {
+            label: "Date of Birth",
+            placeholder: "YYYYMMDD",
+          },
+          phone: {
+            label: "Phone Number",
+            placeholder: "01012345678",
+          },
+          id_front: {
+            label: "ID Front (First 6 digits)",
+            placeholder: "YYMMDD",
+          },
+          id_back: {
+            label: "ID Back (First 1 digit)",
+            placeholder: "1",
+          },
+          auth_method: {
+            label: "Authentication Method",
+          },
+        },
+        providers: {
+          kakao: "KakaoTalk",
+          payco: "Payco",
+          samsung: "Samsung Pass",
+          kb: "KB Mobile Certification",
+          toss: "Toss",
+          naver: "Naver",
+        },
+        action: {
+          submitting: "Verifying...",
+          submit: "Verify Identity",
+        },
+      },
+    },
+    account: {
+      title: "Account",
+      errors: {
+        load_profile: "Failed to load profile",
+        load_social: "Failed to load social accounts",
+      },
+      forms: {
+        edit_profile: {
+          title: "Profile",
+          description: "Update your personal information.",
+          fields: {
+            avatar: {
+              label: "Profile Picture",
+              max_size: "Max size: 5MB",
+              formats: "Formats: JPEG, PNG, WEBP",
+            },
+            name: {
+              label: "Name",
+              placeholder: "Your Name",
+            },
+            marketing_consent: {
+              label: "Receive marketing emails",
+            },
+          },
+          action: {
+            save: "Save Changes",
+          },
+          success: "Profile updated successfully.",
+        },
+        change_email: {
+          title: "Email",
+          add_title: "Add Email",
+          description: "Update your email address.",
+          add_description: "Add an email address to your account.",
+          fields: {
+            current_email: {
+              label: "Current Email",
+            },
+            new_email: {
+              label: "New Email",
+            },
+          },
+          action: {
+            change: "Change Email",
+            add: "Add Email",
+          },
+          success: "Check your new email for a verification link.",
+        },
+        change_password: {
+          title: "Password",
+          add_title: "Add Password",
+          description: "Change your password.",
+          add_description: "Add a password to your account.",
+          fields: {
+            new_password: {
+              label: "New Password",
+            },
+            confirm_password: {
+              label: "Confirm Password",
+            },
+          },
+          action: {
+            change: "Change Password",
+            add: "Set Password",
+          },
+          success: "Password updated successfully.",
+        },
+        connect_social: {
+          title: "Social Accounts",
+          description: "Connect your social accounts for easier login.",
+        },
+        delete_account: {
+          title: "Delete Account",
+          fields: {
+            confirm_delete: "I confirm that I want to delete my account.",
+            confirm_irreversible: "I understand that this action is irreversible.",
+          },
+          action: {
+            delete: "Delete Account",
+          },
+        },
+      },
+    },
   },
   health: {
     dashboard: {
@@ -145,6 +488,10 @@ const en: Translation = {
     },
   },
   common: {
+    languages: {
+      en: "English",
+      ko: "Korean",
+    },
     footer: {
       copyright: "© {{year}} {{appName}}. All rights reserved.",
       privacy: "Privacy Policy",
@@ -192,6 +539,15 @@ const en: Translation = {
       not_found: "404 Page Not Found",
       author_on: "{{author}} on {{date}}",
     },
+  },
+  topics: {
+    title: "Topics",
+    description: "Explore health topics based on Peter Attia's strict standards and Huberman Lab protocols.",
+    browse_content: "BROWSE CONTENT",
+    back_to_topics: "Back to Topics",
+    category_not_found: "Category not found",
+    explore_category: "Explore all {{category}} topics",
+    category_description: "All topics in {{category}}",
   },
   home: {
     title: "HabitGrove",

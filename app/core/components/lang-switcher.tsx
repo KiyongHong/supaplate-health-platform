@@ -80,12 +80,12 @@ export default function LangSwitcher() {
         {/* Spanish language option */}
         {/* Korean language option */}
         <DropdownMenuItem onClick={() => handleLocaleChange("ko")}>
-          🇰🇷 {t("navigation.kr")} {/* Translated name of Korean */}
+          🇰🇷 {t("common.languages.ko")} {/* Translated name of Korean */}
         </DropdownMenuItem>
         
         {/* English language option */}
         <DropdownMenuItem onClick={() => handleLocaleChange("en")}>
-          🇬🇧 {t("navigation.en")} {/* Translated name of English */}
+          🇬🇧 {t("common.languages.en")} {/* Translated name of English */}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

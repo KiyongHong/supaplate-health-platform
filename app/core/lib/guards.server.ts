@@ -37,28 +37,16 @@ import { data } from "react-router";
 import { redirect } from "react-router";
 
 export async function requireAuthentication(client: SupabaseClient) {
-  try {
-    const {
-      data: { user },
-      error,
-    } = await client.auth.getUser();
+  const {
+    data: { user },
+    error,
+  } = await client.auth.getUser();
 
-    if (error || !user) {
-      // If error (invalid token) or no user, treat as unauthorized
-      throw data(null, { status: 401 });
-    }
-  } catch (error: any) {
-    // If it's a redirect response (already thrown above), re-throw it
-    // But here we are throwing data(401), which might be caught by error boundary.
-    // If we want to auto-redirect to login on invalid token:
-    // Check if error is AuthApiError or just general failure
-    
-    // Simplest robust behavior: Redirect to login if checking auth fails
-    // Note: React Router loaders/actions expect redirects to be thrown or returned.
-    
-    // If we want to force login:
+  if (error || !user) {
     throw redirect("/login");
   }
+
+  return user;
 }
 
 /**

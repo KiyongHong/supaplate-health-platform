@@ -35,8 +35,14 @@ export const profiles = pgTable(
     
     // Health Platform Extensions
     ci: text("ci"), // Identity verification CI value
+    di: text("di"), // Duplication Information
+    phone: text("phone"),
+    birthday: text("birthday"), // YYYYMMDD
+    gender: text("gender"),
+    nationality: text("nationality"),
     verified_at: timestamp("verified_at"),
     subscription_status: text("subscription_status").default("free"),
+    role: text("role").default("user").notNull(), // 'user' | 'admin'
     
     // Adds created_at and updated_at timestamp columns
     ...timestamps,

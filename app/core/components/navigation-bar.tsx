@@ -258,8 +258,16 @@ export function NavigationBar({
           <Link
             to="/blog"
             viewTransition
+            className="text-muted-foreground hover:text-foreground text-sm transition-colors"
           >
             {t("common.nav.blog")}
+          </Link>
+          <Link
+            to="/topics"
+            viewTransition
+            className="text-muted-foreground hover:text-foreground text-sm transition-colors"
+          >
+            {t("topics.title")}
           </Link>
           <Link
             to="/contact"
@@ -310,6 +318,9 @@ export function NavigationBar({
           <SheetHeader>
             <SheetClose asChild>
               <Link to="/blog">{t("common.nav.blog")}</Link>
+            </SheetClose>
+            <SheetClose asChild>
+              <Link to="/topics">{t("topics.title")}</Link>
             </SheetClose>
             <SheetClose asChild>
               <Link to="/contact">{t("contact.title")}</Link>

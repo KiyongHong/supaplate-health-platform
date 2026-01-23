@@ -22,6 +22,20 @@
       "when": 1768976055654,
       "tag": "0002_massive_silver_surfer",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1769123838621,
+      "tag": "0003_melodic_carnage",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1769157837022,
+      "tag": "0004_outgoing_major_mapleleaf",
+      "breakpoints": true
     }
   ]
 }

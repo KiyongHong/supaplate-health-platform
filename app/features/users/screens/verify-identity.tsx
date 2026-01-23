@@ -9,6 +9,7 @@ import { fetchHealthDataFromAPI } from "~/features/health/services/health-api.se
 import { IdentityVerification } from "~/features/users/components/identity-verification";
 import i18next from "~/core/lib/i18next.server";
 import { useTranslation } from "react-i18next";
+import React from "react";
 
 export const meta: Route.MetaFunction = ({ data }: { data: { title?: string } }) => {
   return [{ title: data?.title ?? "Verify Identity | Health Platform" }];
@@ -75,10 +76,87 @@ export async function action({ request }: Route.ActionArgs) {
 
 export default function VerifyIdentityScreen() {
   const { t } = useTranslation();
+  
+  // Dynamic script loading for Toss Cert
+  React.useEffect(() => {
+    const script = document.createElement("script");
+    script.src = "https://cdn.toss.im/cert/v1";
+    script.async = true;
+    document.head.appendChild(script);
+
+    return () => {
+      document.head.removeChild(script);
+    };
+  }, []);
+
+  const handleVerify = async () => {
+    try {
+      // 1. Request TxId
+      const reqResponse = await fetch("/api/users/toss/request", { method: "POST" });
+      const reqData = await reqResponse.json();
+
+      if (!reqResponse.ok) {
+        throw new Error(reqData.error || "Failed to start verification");
+      }
+
+      const { txId, authUrl } = reqData;
+      
+      // 2. Open Toss Cert Popup
+      // @ts-ignore - TossCert is loaded globally by the script
+      if (typeof window.TossCert === "undefined") {
+         alert("Toss Cert SDK not loaded yet. Please refresh.");
+         return;
+      }
+
+      // @ts-ignore
+      const tossCert = window.TossCert();
+      tossCert.preparePopup();
+
+      tossCert.start({
+        authUrl,
+        txId,
+        onSuccess: async () => {
+          // 3. Handle Success
+          const successResponse = await fetch("/api/users/toss/success", {
+            method: "POST",
+            body: new URLSearchParams({ txId }),
+          });
+          
+          if (successResponse.ok) {
+             window.location.reload(); // Reload to show verified status
+          } else {
+             alert("Verification processing failed checking server.");
+          }
+        },
+        onFail: (error: any) => {
+          console.error("Toss Cert Failed", error);
+          alert("Verification failed or cancelled.");
+        },
+      });
+
+    } catch (error) {
+      console.error(error);
+      alert("An error occurred during verification initialization.");
+    }
+  };
+
   return (
-    <div className="container max-w-lg py-10">
+    <div className="container max-w-lg py-10 flex flex-col items-center">
       <h1 className="text-2xl font-bold mb-6 text-center">{t("users.verify_identity.header")}</h1>
-      <IdentityVerification />
+      
+      <div className="bg-card p-6 rounded-lg border shadow-sm w-full text-center">
+        <p className="text-muted-foreground mb-6">
+          {t("users.verify_identity.description", "Verify your identity safely using Toss App.")}
+        </p>
+        
+        <button 
+          onClick={handleVerify}
+          className="bg-[#3182F6] hover:bg-[#1B64DA] text-white font-bold py-3 px-6 rounded-lg w-full transition-colors flex items-center justify-center gap-2"
+        >
+          {/* Toss Logo SVG could go here */}
+          {t("users.verify_identity.button", "Verify with Toss")}
+        </button>
+      </div>
     </div>
   );
 }
