@@ -1,10 +1,11 @@
+import "dotenv/config";
 import { eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
 
 import * as userSchema from "../app/features/users/schema";
 
-const client = postgres(process.env.DATABASE_URL!);
+const client = postgres(process.env.DATABASE_URL!, { prepare: false });
 const db = drizzle(client, { schema: userSchema });
 
 async function makeAdmin(email: string) {
