@@ -13,7 +13,7 @@ import type { Route } from "./+types/post";
 
 import { bundleMDX } from "mdx-bundler";
 import { getMDXComponent } from "mdx-bundler/client";
-import path from "node:path";
+
 import { data } from "react-router";
 
 import {
@@ -104,20 +104,46 @@ export const meta: Route.MetaFunction = ({ data }) => {
  */
 export async function loader({ params, request }: Route.LoaderArgs) {
   const t = await i18next.getFixedT(request);
-  // Construct the full path to the MDX file based on the slug parameter
-  const filePath = path.join(
-    process.cwd(),
-    "app",
-    "features",
-    "blog",
-    "docs",
-    `${params.slug}.mdx`,
-  );
+  const slug = params.slug;
+
+  // Use Vite's import.meta.glob to load MDX files
+  const modules = import.meta.glob("../docs/*.mdx", { 
+    eager: true, 
+    query: "?raw",
+    import: "default",
+  });
+
+  // Load component files for MDX imports
+  const componentModules = import.meta.glob("../components/*.tsx", {
+    eager: true,
+    query: "?raw",
+    import: "default",
+  });
+
+  // Prepare files object for mdx-bundler
+  const files: Record<string, string> = {};
+  for (const [path, content] of Object.entries(componentModules)) {
+    // files keys should match the import paths relative to the MDX file location
+    // or be absolute-like if we can control the resolution context.
+    // Here we keep the keys as relative paths from THIS file (screens/post.tsx)
+    // which effectively puts them in the virtual filesystem at ../components/...
+    if (typeof content === "string") {
+      files[path] = content;
+    }
+  }
+
+  const matchedPath = `../docs/${slug}.mdx`;
+  const content = modules[matchedPath];
+
+  if (!content) {
+    return data({ not_found: t("blog.post.not_found") }, { status: 404 });
+  }
   
   try {
     // Process the MDX file to extract code and frontmatter
     const { code, frontmatter } = await bundleMDX({
-      file: filePath,
+      source: content as string,
+      files,
     });
 
     // Return both the compiled MDX code and the frontmatter metadata
@@ -127,11 +153,7 @@ export async function loader({ params, request }: Route.LoaderArgs) {
       not_found: t("blog.post.not_found"),
     };
   } catch (error) {
-    // Handle file not found errors with a 404 response
-    if (error instanceof Error && "code" in error && error.code === "ENOENT") {
-      return data({ not_found: t("blog.post.not_found") }, { status: 404 });
-    }
-    // Handle all other errors with a 500 response
+    // Handle errors with a 500 response
     throw data(null, { status: 500 });
   }
 }

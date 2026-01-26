@@ -14,8 +14,7 @@
 import type { Route } from "./+types/posts";
 
 import { bundleMDX } from "mdx-bundler";
-import { readdir } from "node:fs/promises";
-import path from "node:path";
+
 import { Link } from "react-router";
 
 import { Badge } from "~/core/components/ui/badge";
@@ -69,22 +68,48 @@ interface Frontmatter {
  */
 export async function loader({ request }: Route.LoaderArgs) {
   const t = await i18next.getFixedT(request);
-  // Get the path to the docs directory containing MDX files
-  const docsPath = path.join(process.cwd(), "app", "features", "blog", "docs");
+  
+  // Use Vite's import.meta.glob to load MDX files
+  // eager: true loads the content immediately (as string)
+  // as: 'raw' ensures we get the raw string content
+  const modules = import.meta.glob("../docs/*.mdx", { 
+    eager: true, 
+    query: "?raw",
+    import: "default",
+  });
 
-  // Read all files in the docs directory
-  const files = await readdir(docsPath);
+  // Load component files for MDX imports
+  const componentModules = import.meta.glob("../components/*.tsx", {
+    eager: true,
+    query: "?raw",
+    import: "default",
+  });
 
-  // Filter for MDX files only
-  const mdxFiles = files.filter((file) => file.endsWith(".mdx"));
+  // Prepare files object for mdx-bundler
+  const files: Record<string, string> = {};
+  for (const [path, content] of Object.entries(componentModules)) {
+    if (typeof content === "string") {
+      files[path] = content;
+    }
+  }
 
-  // Extract frontmatter from each MDX file
+  // Process all modules
   const frontmatters = await Promise.all(
-    mdxFiles.map(async (file) => {
-      const filePath = path.join(docsPath, file);
-      const { frontmatter } = await bundleMDX({ file: filePath });
-      return frontmatter;
-    }),
+    Object.entries(modules).map(async ([filepath, content]) => {
+      // content is the raw MDX string
+      const { frontmatter } = await bundleMDX({ 
+        source: content as string,
+        files,
+      });
+      
+      // Extract slug from filepath
+      const slug = filepath.replace("../docs/", "").replace(".mdx", "");
+      
+      return {
+        ...(frontmatter as Omit<Frontmatter, "slug">),
+        slug,
+      };
+    })
   );
 
   // Sort posts by date, newest first

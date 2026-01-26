@@ -19,7 +19,7 @@ import type { Route } from "./+types/og";
 
 import { ImageResponse } from "@vercel/og";
 import { bundleMDX } from "mdx-bundler";
-import path from "node:path";
+
 import { data } from "react-router";
 import { z } from "zod";
 
@@ -67,20 +67,40 @@ export async function loader({ request }: Route.LoaderArgs) {
     return data(null, { status: 400 });
   }
   
-  // Construct the file path to the MDX file
-  const filePath = path.join(
-    process.cwd(),
-    "app",
-    "features",
-    "blog",
-    "docs",
-    `${params.slug}.mdx`,
-  );
+  // Use Vite's import.meta.glob to load MDX files
+  const modules = import.meta.glob("../docs/*.mdx", { 
+    eager: true, 
+    query: "?raw",
+    import: "default",
+  });
+
+  // Load component files for MDX imports
+  const componentModules = import.meta.glob("../components/*.tsx", {
+    eager: true,
+    query: "?raw",
+    import: "default",
+  });
+
+  // Prepare files object for mdx-bundler
+  const files: Record<string, string> = {};
+  for (const [path, content] of Object.entries(componentModules)) {
+    if (typeof content === "string") {
+      files[path] = content;
+    }
+  }
+
+  const matchedPath = `../docs/${params.slug}.mdx`;
+  const content = modules[matchedPath];
+  
+  if (!content) {
+    throw data(null, { status: 404 });
+  }
   
   try {
     // Load and parse the MDX file to extract frontmatter
     const { frontmatter } = await bundleMDX({
-      file: filePath,
+      source: content as string,
+      files,
     });
     
     // Generate and return the OG image using Vercel's ImageResponse
@@ -108,10 +128,6 @@ export async function loader({ request }: Route.LoaderArgs) {
       },
     );
   } catch (error) {
-    // Handle file not found errors with a 404 response
-    if (error instanceof Error && "code" in error && error.code === "ENOENT") {
-      throw data(null, { status: 404 });
-    }
     // Handle other errors with a 500 response
     throw data(null, { status: 500 });
   }
